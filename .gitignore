@@ -1,1 +1,9 @@
+target/*
 target/
+target
+
+.metadata
+
+*.log
+
+build.fxbuild

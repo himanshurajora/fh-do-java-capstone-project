@@ -1,4 +1,4 @@
-package com.group2_fhdo_capstone_project.modules;
+package application.modules;
 
 public class Task {
     public static int taskCounter = 0;
