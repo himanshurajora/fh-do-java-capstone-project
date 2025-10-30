@@ -1,11 +1,103 @@
 package application.modules;
 
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class TaskManager {
+    private List<Task> tasks;
+    private List<String> systemLogs;
 
-    // the tasks queue
+    public TaskManager() {
+        this.tasks = new ArrayList<>();
+        this.systemLogs = new ArrayList<>();
+    }
 
+    public Task createTask(String taskName, String description, Task.TaskPriority priority, String assignedTo) {
+        String taskId = "TASK_" + System.currentTimeMillis();
+        Task task = new Task(taskId, taskName, description, priority, assignedTo);
+        tasks.add(task);
+        logSystemActivity("TASK_CREATED", "New task created: " + taskName + " assigned to " + assignedTo);
+        return task;
+    }
 
-    // the add task method
-    // the remove task method
-    // the execution handler for all tasks
+    public List<Task> getTasksByStatus(Task.TaskStatus status) {
+        return tasks.stream()
+                .filter(task -> task.getStatus() == status)
+                .collect(Collectors.toList());
+    }
+
+    public List<Task> getTasksByPriority(Task.TaskPriority priority) {
+        return tasks.stream()
+                .filter(task -> task.getPriority() == priority)
+                .collect(Collectors.toList());
+    }
+
+    public List<Task> getTasksByAssignee(String assignee) {
+        return tasks.stream()
+                .filter(task -> task.getAssignedTo().equals(assignee))
+                .collect(Collectors.toList());
+    }
+
+    public Task getTaskById(String taskId) {
+        return tasks.stream()
+                .filter(task -> task.getTaskId().equals(taskId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public void startTask(String taskId) {
+        Task task = getTaskById(taskId);
+        if (task != null) {
+            task.startTask();
+            logSystemActivity("TASK_STARTED", "Task " + taskId + " started");
+        } else {
+            logSystemActivity("ERROR", "Task " + taskId + " not found");
+        }
+    }
+
+    public void completeTask(String taskId) {
+        Task task = getTaskById(taskId);
+        if (task != null) {
+            task.completeTask();
+            logSystemActivity("TASK_COMPLETED", "Task " + taskId + " completed");
+        } else {
+            logSystemActivity("ERROR", "Task " + taskId + " not found");
+        }
+    }
+
+    public void cancelTask(String taskId) {
+        Task task = getTaskById(taskId);
+        if (task != null) {
+            task.cancelTask();
+            logSystemActivity("TASK_CANCELLED", "Task " + taskId + " cancelled");
+        } else {
+            logSystemActivity("ERROR", "Task " + taskId + " not found");
+        }
+    }
+
+    public List<Task> getAllTasks() {
+        return new ArrayList<>(tasks);
+    }
+
+    private void logSystemActivity(String action, String description) {
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        String logEntry = String.format("[%s] SYSTEM_%s: %s", timestamp, action, description);
+        systemLogs.add(logEntry);
+    }
+
+    public List<String> getSystemLogs() {
+        return new ArrayList<>(systemLogs);
+    }
+
+    public int getTaskCount() {
+        return tasks.size();
+    }
+
+    public int getTaskCountByStatus(Task.TaskStatus status) {
+        return (int) tasks.stream().filter(task -> task.getStatus() == status).count();
+    }
 }
