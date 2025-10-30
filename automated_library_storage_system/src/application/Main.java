@@ -1,8 +1,109 @@
 package application;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Scanner;
+
 public class Main {
  
     public static void main(String[] args) {
+    	runDemo();
+    	System.out.println("\n\n");
+    	runCLI();
+    }
+
+    private static void runCLI() {
+    	Scanner scanner = new Scanner(System.in);
+    	boolean running = true;
+    	
+    	System.out.println("=== Library Storage System Log Viewer ===");
+    	
+    	while (running) {
+    		System.out.println("\nOptions:");
+    		System.out.println("1. Open logs by date (dd-MM-yyyy)");
+    		System.out.println("2. Search logs by equipment name");
+    		System.out.println("3. List available log files");
+    		System.out.println("4. Exit");
+    		System.out.print("Enter option (1-4): ");
+    		
+    		String choice = scanner.nextLine().trim();
+    		
+    		switch (choice) {
+    			case "1":
+    				handleOpenByDate(scanner);
+    				break;
+    			case "2":
+    				handleSearchByEquipment(scanner);
+    				break;
+    			case "3":
+    				handleListFiles();
+    				break;
+    			case "4":
+    				running = false;
+    				System.out.println("Goodbye!");
+    				break;
+    			default:
+    				System.out.println("Invalid option. Please enter 1-4.");
+    		}
+    	}
+    	scanner.close();
+    }
+
+    private static void handleOpenByDate(Scanner scanner) {
+    	System.out.print("Enter date (dd-MM-yyyy): ");
+    	String dateStr = scanner.nextLine().trim();
+    	
+    	try {
+    		List<String> lines = Logger.openLogByDateString(dateStr);
+    		if (lines.isEmpty()) {
+    			System.out.println("No logs found for date: " + dateStr);
+    		} else {
+    			System.out.println("\n=== Logs for " + dateStr + " (" + lines.size() + " entries) ===");
+    			for (String line : lines) {
+    				System.out.println(line);
+    			}
+    		}
+    	} catch (IOException e) {
+    		System.out.println("Error: " + e.getMessage());
+    	}
+    }
+
+    private static void handleSearchByEquipment(Scanner scanner) {
+    	System.out.print("Enter equipment name (e.g., RBT-01, shelf-A2, CHG-1): ");
+    	String equipmentName = scanner.nextLine().trim();
+    	
+    	try {
+    		List<String> results = Logger.searchLogsByEquipment(equipmentName);
+    		if (results.isEmpty()) {
+    			System.out.println("No logs found for equipment: " + equipmentName);
+    		} else {
+    			System.out.println("\n=== Logs for " + equipmentName + " (" + results.size() + " entries) ===");
+    			for (String result : results) {
+    				System.out.println(result);
+    			}
+    		}
+    	} catch (IOException e) {
+    		System.out.println("Error: " + e.getMessage());
+    	}
+    }
+
+    private static void handleListFiles() {
+    	try {
+    		List<String> files = Logger.listAvailableLogFiles();
+    		if (files.isEmpty()) {
+    			System.out.println("No log files found.");
+    		} else {
+    			System.out.println("\n=== Available Log Files (" + files.size() + " files) ===");
+    			for (String file : files) {
+    				System.out.println(file);
+    			}
+    		}
+    	} catch (IOException e) {
+    		System.out.println("Error: " + e.getMessage());
+    	}
+    }
+
+    private static void runDemo() {
     	System.out.println("Starting Automated Library Storage System demo...");
 
     	// System level log
@@ -22,10 +123,14 @@ public class Main {
 		application.modules.TaskManager tm = new application.modules.TaskManager();
 		application.modules.Task t1 = tm.createTask("PickOrder-1001", "Pick 3 books from A2", application.modules.TaskPriority.HIGH, robotA);
 		application.modules.Task t2 = tm.createTask("ChargeRobot", "Charge RBT-02 at CHG-1", application.modules.TaskPriority.MEDIUM, robotB);
-		tm.startTask(t1.getTaskId());
-		tm.completeTask(t1.getTaskId());
-		tm.startTask(t2.getTaskId());
-		tm.cancelTask(t2.getTaskId());
+		try {
+			tm.startTask(t1.getTaskId());
+			tm.completeTask(t1.getTaskId());
+			tm.startTask(t2.getTaskId());
+			tm.cancelTask(t2.getTaskId());
+		} catch (application.modules.RobotExceptions.TaskNotFoundException e) {
+			Logger.logSystem("ERROR", "Task operation failed: " + e.getMessage());
+		}
 		Logger.logSystem("INFO", "Tasks summary: total=" + tm.getAllTasks().size());
 
     	// Regex-based log entry creation

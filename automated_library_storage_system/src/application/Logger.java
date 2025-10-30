@@ -12,9 +12,11 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class Logger {
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -75,6 +77,63 @@ public class Logger {
             return Files.readAllLines(file, StandardCharsets.UTF_8);
         }
         return List.of();
+    }
+
+    public static List<String> openLogByDateString(String dateStr) throws IOException {
+        try {
+            LocalDate date = LocalDate.parse(dateStr, DATE_FMT);
+            List<String> all = new ArrayList<>();
+            for (Scope scope : Scope.values()) {
+                List<String> lines = openLogByDate(scope, date);
+                all.addAll(lines);
+            }
+            return all;
+        } catch (Exception e) {
+            throw new IOException("Invalid date format: " + dateStr + ". Expected: dd-MM-yyyy", e);
+        }
+    }
+
+    public static List<String> searchLogsByEquipment(String equipmentName) throws IOException {
+        List<String> results = new ArrayList<>();
+        if (equipmentName == null || equipmentName.trim().isEmpty()) {
+            return results;
+        }
+        String searchTerm = equipmentName.trim().toLowerCase();
+        
+        if (!Files.exists(LOG_ROOT)) {
+            return results;
+        }
+        
+        try (Stream<Path> paths = Files.list(LOG_ROOT)) {
+            for (Path file : paths.toArray(Path[]::new)) {
+                String fileName = file.getFileName().toString();
+                if (fileName.endsWith(".log")) {
+                    List<String> lines = Files.readAllLines(file, StandardCharsets.UTF_8);
+                    for (String line : lines) {
+                        if (line.toLowerCase().contains(searchTerm)) {
+                            results.add(fileName + ": " + line);
+                        }
+                    }
+                }
+            }
+        }
+        return results;
+    }
+
+    public static List<String> listAvailableLogFiles() throws IOException {
+        List<String> files = new ArrayList<>();
+        if (!Files.exists(LOG_ROOT)) {
+            return files;
+        }
+        try (Stream<Path> paths = Files.list(LOG_ROOT)) {
+            for (Path file : paths.toArray(Path[]::new)) {
+                String fileName = file.getFileName().toString();
+                if (fileName.endsWith(".log")) {
+                    files.add(fileName);
+                }
+            }
+        }
+        return files;
     }
 
     private static void write(Scope scope, String name, String level, String message) {
