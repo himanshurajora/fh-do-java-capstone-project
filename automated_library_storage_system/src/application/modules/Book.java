@@ -16,4 +16,9 @@ public class Book {
     public String toString() {
         return title + " by " + author;
     }
+
+	public float getWeightKg() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

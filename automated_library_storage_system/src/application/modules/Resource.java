@@ -14,7 +14,7 @@ public abstract class Resource {
     }
 
     // abstract method to execute a task
-    public abstract void execute(Task task);
+    public abstract void execute(Task task) throws RobotExceptions;
 
  
     public String getId() {
