@@ -1,0 +1,104 @@
+.root {
+    -fx-font-family: "Arial";
+    -fx-background-color: #f2f4f7;
+}
+
+/* Top bar */
+.top-bar {
+    -fx-background-color: #0D47A1;
+    -fx-padding: 10 16;
+    -fx-alignment: center-left;
+}
+.nav-item {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+/* Cards */
+.card {
+    -fx-background-color: white;
+    -fx-padding: 20;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: #B0BEC5;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 6, 0, 0, 2);
+    -fx-pref-height: 320;   
+}
+
+
+.card-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0D47A1;
+}
+
+/* Primary button */
+.primary-btn {
+    -fx-background-color: #0D47A1;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 8 12;
+}
+.primary-btn:hover {
+    -fx-background-color: #1565C0;
+}
+
+
+.book-status {
+    -fx-text-fill: #107B2B;
+    -fx-font-weight: bold;
+}
+
+/* Storage slot buttons */
+.slot {
+    -fx-pref-width: 52;
+    -fx-pref-height: 52;
+    -fx-background-color: #CFD8DC;
+    -fx-background-radius: 8;
+    -fx-border-color: #B0BEC5;
+    -fx-border-radius: 8;
+	
+}
+
+/* Right panel (charging card) styling */
+.right-panel {
+    -fx-background-color: transparent;
+	
+	
+}
+
+
+.charging-slot {
+    -fx-pref-width: 140;
+    -fx-pref-height: 40;
+    -fx-background-color: #107B2B; 
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+    -fx-padding: 5 0 5 5; 
+}
+
+.charging-slot:hover {
+    -fx-background-color: #0c6b27;
+}
+
+
+.charging-slot:hover {
+    -fx-background-color: #0c6b27;
+}
+
+
+.active-slot {
+    -fx-background-color: #0D47A1; 
+    -fx-text-fill: white;
+}
+
+
+.table-view {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
