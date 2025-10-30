@@ -39,4 +39,14 @@ public class RobotExceptions extends Exception {
             super(message, cause);
         }
     }
+
+    public static class InvalidOperationException extends RobotExceptions {
+        public InvalidOperationException(String message) { super(message); }
+        public InvalidOperationException(String message, Throwable cause) { super(message, cause); }
+    }
+
+    public static class ResourceUnavailableException extends RobotExceptions {
+        public ResourceUnavailableException(String message) { super(message); }
+        public ResourceUnavailableException(String message, Throwable cause) { super(message, cause); }
+    }
 }

@@ -28,7 +28,7 @@ public class Library {
 	    }
 
 	  
-	    public void addBook(Book book) {
+    public void addBook(Book book) {
 	        try {
 	            if (book != null) {
 	                books.add(book);
@@ -36,14 +36,16 @@ public class Library {
 	                application.Logger.logSystem("INFO", "Book added: " + book.getTitle());
 	            } else {
 	                System.out.println("Cannot add a null book.");
+                throw new IllegalArgumentException("book is null");
 	            }
 	        } catch (Exception e) {
 	            System.out.println("Error while adding book: " + e.getMessage());
 	            application.Logger.logSystem("ERROR", "Add book failed: " + e.getMessage());
+            throw e instanceof RuntimeException ? (RuntimeException)e : new RuntimeException(e);
 	        }
 	    }
 
-	    public void addShelf(Shelf shelf) {
+    public void addShelf(Shelf shelf) {
 	        try {
 	            if (shelf != null) {
 	                shelves.add(shelf);
@@ -51,14 +53,16 @@ public class Library {
 	                application.Logger.logSystem("INFO", "Shelf added");
 	            } else {
 	                System.out.println("Cannot add a null shelf.");
+                throw new IllegalArgumentException("shelf is null");
 	            }
 	        } catch (Exception e) {
 	            System.out.println("Error while adding shelf: " + e.getMessage());
 	            application.Logger.logSystem("ERROR", "Add shelf failed: " + e.getMessage());
+            throw e instanceof RuntimeException ? (RuntimeException)e : new RuntimeException(e);
 	        }
 	    }
 
-	    public void addRobot(Robot robot) {
+    public void addRobot(Robot robot) {
 	        try {
 	            if (robot != null) {
 	                robots.add(robot);
@@ -66,14 +70,16 @@ public class Library {
 	                application.Logger.logSystem("INFO", "Robot added: " + robot.getId());
 	            } else {
 	                System.out.println("Cannot add a null robot.");
+                throw new IllegalArgumentException("robot is null");
 	            }
 	        } catch (Exception e) {
 	            System.out.println("Error while adding robot: " + e.getMessage());
 	            application.Logger.logSystem("ERROR", "Add robot failed: " + e.getMessage());
+            throw e instanceof RuntimeException ? (RuntimeException)e : new RuntimeException(e);
 	        }
 	    }
 
-	    public void addStation(ChargingStation station) {
+    public void addStation(ChargingStation station) {
 	        try {
 	            if (station != null) {
 	                stations.add(station);
@@ -81,10 +87,12 @@ public class Library {
 	                application.Logger.logSystem("INFO", "Charging station added");
 	            } else {
 	                System.out.println("Cannot add a null station.");
+                throw new IllegalArgumentException("station is null");
 	            }
 	        } catch (Exception e) {
 	            System.out.println("Error while adding station: " + e.getMessage());
 	            application.Logger.logSystem("ERROR", "Add station failed: " + e.getMessage());
+            throw e instanceof RuntimeException ? (RuntimeException)e : new RuntimeException(e);
 	        }
 	    }
 

@@ -49,34 +49,34 @@ public class TaskManager {
                 .orElse(null);
     }
 
-    public void startTask(String taskId) {
+    public void startTask(String taskId) throws RobotExceptions.TaskNotFoundException {
         Task task = getTaskById(taskId);
-        if (task != null) {
-            task.startTask();
-            logSystemActivity("TASK_STARTED", "Task " + taskId + " started");
-        } else {
+        if (task == null) {
             logSystemActivity("ERROR", "Task " + taskId + " not found");
+            throw new RobotExceptions.TaskNotFoundException("Task not found: " + taskId);
         }
+        task.startTask();
+        logSystemActivity("TASK_STARTED", "Task " + taskId + " started");
     }
 
-    public void completeTask(String taskId) {
+    public void completeTask(String taskId) throws RobotExceptions.TaskNotFoundException {
         Task task = getTaskById(taskId);
-        if (task != null) {
-            task.completeTask();
-            logSystemActivity("TASK_COMPLETED", "Task " + taskId + " completed");
-        } else {
+        if (task == null) {
             logSystemActivity("ERROR", "Task " + taskId + " not found");
+            throw new RobotExceptions.TaskNotFoundException("Task not found: " + taskId);
         }
+        task.completeTask();
+        logSystemActivity("TASK_COMPLETED", "Task " + taskId + " completed");
     }
 
-    public void cancelTask(String taskId) {
+    public void cancelTask(String taskId) throws RobotExceptions.TaskNotFoundException {
         Task task = getTaskById(taskId);
-        if (task != null) {
-            task.cancelTask();
-            logSystemActivity("TASK_CANCELLED", "Task " + taskId + " cancelled");
-        } else {
+        if (task == null) {
             logSystemActivity("ERROR", "Task " + taskId + " not found");
+            throw new RobotExceptions.TaskNotFoundException("Task not found: " + taskId);
         }
+        task.cancelTask();
+        logSystemActivity("TASK_CANCELLED", "Task " + taskId + " cancelled");
     }
 
     public List<Task> getAllTasks() {

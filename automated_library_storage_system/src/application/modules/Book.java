@@ -5,6 +5,12 @@ public class Book {
     private String author;
 
     public Book(String title, String author) {
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("title is null/empty");
+        }
+        if (author == null || author.trim().isEmpty()) {
+            throw new IllegalArgumentException("author is null/empty");
+        }
         this.title = title;
         this.author = author;
         application.Logger.logStorage(title, "INFO", "Book created: " + title + " by " + author);
