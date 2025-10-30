@@ -6,7 +6,7 @@
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="application.MainController"
-            stylesheets="@dashboard.css"
+            stylesheets="@Dashboard.css"
             prefWidth="1000" prefHeight="700">
 
     <!-- TOP BAR -->
