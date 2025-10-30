@@ -16,7 +16,7 @@ public class TaskManager {
         this.systemLogs = new ArrayList<>();
     }
 
-    public Task createTask(String taskName, String description, Task.TaskPriority priority, String assignedTo) {
+    public Task createTask(String taskName, String description, TaskPriority priority, String assignedTo) {
         String taskId = "TASK_" + System.currentTimeMillis();
         Task task = new Task(taskId, taskName, description, priority, assignedTo);
         tasks.add(task);
@@ -24,13 +24,13 @@ public class TaskManager {
         return task;
     }
 
-    public List<Task> getTasksByStatus(Task.TaskStatus status) {
+    public List<Task> getTasksByStatus(TaskStatus status) {
         return tasks.stream()
                 .filter(task -> task.getStatus() == status)
                 .collect(Collectors.toList());
     }
 
-    public List<Task> getTasksByPriority(Task.TaskPriority priority) {
+    public List<Task> getTasksByPriority(TaskPriority priority) {
         return tasks.stream()
                 .filter(task -> task.getPriority() == priority)
                 .collect(Collectors.toList());
@@ -97,7 +97,7 @@ public class TaskManager {
         return tasks.size();
     }
 
-    public int getTaskCountByStatus(Task.TaskStatus status) {
+    public int getTaskCountByStatus(TaskStatus status) {
         return (int) tasks.stream().filter(task -> task.getStatus() == status).count();
     }
 }

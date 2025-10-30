@@ -1,7 +1,7 @@
 package application.modules;
 
 public enum TaskStatus {
-    QUEUED,
+    PENDING,
     IN_PROGRESS,
     COMPLETED,
     CANCELLED
