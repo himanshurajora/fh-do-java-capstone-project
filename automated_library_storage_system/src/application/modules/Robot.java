@@ -35,21 +35,25 @@ public class Robot extends Resource {
 
     public void dock() {
         isDocked = true;
+        application.Logger.logResources(getId(), "INFO", "Docked");
     }
 
     public void undock() {
         isDocked = false;
         currentChargePercent = 100;
+        application.Logger.logResources(getId(), "INFO", "Undocked and charged to 100%");
     }
 
     public void addBooks(List<Book> books) {
         if (canCarry(books)) {
             carryingBooks.addAll(books);
+            application.Logger.logResources(getId(), "INFO", "Added books: count=" + books.size());
         }
     }
 
     public void removeBooks(List<Book> books) {
         carryingBooks.removeAll(books);
+        application.Logger.logResources(getId(), "INFO", "Removed books: count=" + books.size());
     }
 
     public void execute(Task task) throws RobotExceptions {
@@ -64,9 +68,12 @@ public class Robot extends Resource {
                 throw new LowBatteryException("Battery too low");
             }
             addBooks(task.getBooks());
+            application.Logger.logResources(getId(), "INFO", "Executed task: " + task.getTaskId());
         } catch (TaskNotFoundException | OverloadException | LowBatteryException e) {
+            application.Logger.logResources(getId(), "ERROR", "Execution failed: " + e.getMessage());
             throw new RobotExceptions("Robot execution failed", e);
         } catch (Exception e) {
+            application.Logger.logResources(getId(), "ERROR", "Execution error: " + e.getMessage());
             throw new RobotExceptions("Error occured during execution", e);
         }
     }

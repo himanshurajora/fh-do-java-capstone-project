@@ -7,6 +7,7 @@ public class Book {
     public Book(String title, String author) {
         this.title = title;
         this.author = author;
+        application.Logger.logStorage(title, "INFO", "Book created: " + title + " by " + author);
     }
 
     public String getTitle() { return title; }

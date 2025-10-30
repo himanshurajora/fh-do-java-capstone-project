@@ -24,6 +24,7 @@ public class Library {
 	        taskManager = new TaskManager();
 
 	        System.out.println("Library System Initialized Successfully!");
+	        application.Logger.logSystem("INFO", "Library initialized");
 	    }
 
 	  
@@ -32,11 +33,13 @@ public class Library {
 	            if (book != null) {
 	                books.add(book);
 	                System.out.println("Book added successfully: " + book.getTitle());
+	                application.Logger.logSystem("INFO", "Book added: " + book.getTitle());
 	            } else {
 	                System.out.println("Cannot add a null book.");
 	            }
 	        } catch (Exception e) {
 	            System.out.println("Error while adding book: " + e.getMessage());
+	            application.Logger.logSystem("ERROR", "Add book failed: " + e.getMessage());
 	        }
 	    }
 
@@ -45,11 +48,13 @@ public class Library {
 	            if (shelf != null) {
 	                shelves.add(shelf);
 	                System.out.println("Shelf added successfully.");
+	                application.Logger.logSystem("INFO", "Shelf added");
 	            } else {
 	                System.out.println("Cannot add a null shelf.");
 	            }
 	        } catch (Exception e) {
 	            System.out.println("Error while adding shelf: " + e.getMessage());
+	            application.Logger.logSystem("ERROR", "Add shelf failed: " + e.getMessage());
 	        }
 	    }
 
@@ -58,11 +63,13 @@ public class Library {
 	            if (robot != null) {
 	                robots.add(robot);
 	                System.out.println("Robot added successfully: " + robot.getId());
+	                application.Logger.logSystem("INFO", "Robot added: " + robot.getId());
 	            } else {
 	                System.out.println("Cannot add a null robot.");
 	            }
 	        } catch (Exception e) {
 	            System.out.println("Error while adding robot: " + e.getMessage());
+	            application.Logger.logSystem("ERROR", "Add robot failed: " + e.getMessage());
 	        }
 	    }
 
@@ -71,11 +78,13 @@ public class Library {
 	            if (station != null) {
 	                stations.add(station);
 	                System.out.println("Charging Station added successfully.");
+	                application.Logger.logSystem("INFO", "Charging station added");
 	            } else {
 	                System.out.println("Cannot add a null station.");
 	            }
 	        } catch (Exception e) {
 	            System.out.println("Error while adding station: " + e.getMessage());
+	            application.Logger.logSystem("ERROR", "Add station failed: " + e.getMessage());
 	        }
 	    }
 
@@ -87,6 +96,7 @@ public class Library {
 	        System.out.println("Total Charging Stations: " + stations.size());
 	        System.out.println("Tasks in Manager: " + taskManager.getTaskCount());
 	        System.out.println("-------------------------\n");
+	        application.Logger.logSystem("INFO", "Monitor: books=" + books.size() + ", shelves=" + shelves.size() + ", robots=" + robots.size() + ", stations=" + stations.size());
 	    }
 
 	    

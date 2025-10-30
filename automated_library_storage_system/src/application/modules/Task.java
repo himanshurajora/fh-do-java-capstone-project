@@ -72,6 +72,8 @@ public class Task {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String logEntry = String.format("[%s] %s: %s", timestamp, action, description);
         logEntries.add(logEntry);
+        // Also write to tasks scope log file
+        application.Logger.logTasks("INFO", logEntry);
     }
 
     public String getTaskId() {
