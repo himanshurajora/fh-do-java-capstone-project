@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="application.MainController"
+            stylesheets="@dashboard.css"
+            prefWidth="1000" prefHeight="700">
+
+    <!-- TOP BAR -->
+    <top>
+        <HBox spacing="20" styleClass="top-bar">
+            <padding><Insets top="10" right="16" bottom="10" left="16"/></padding>
+            <Label text="Dashboard" styleClass="nav-item"/>
+            <Label text="Books" styleClass="nav-item"/>
+            <Label text="Storage" styleClass="nav-item"/>
+            <Label text="Equipment" styleClass="nav-item"/>
+            <Label text="Charging" styleClass="nav-item"/>
+            <Label text="Logs" styleClass="nav-item"/>
+            <Region HBox.hgrow="ALWAYS"/>
+        </HBox>
+    </top>
+
+   
+    <right>
+        <VBox spacing="15" prefWidth="180" prefHeight="220"
+      styleClass="card" GridPane.columnIndex="2" GridPane.rowIndex="0" alignment="TOP_CENTER">
+    <Label text="Charging Station" styleClass="card-title"/>
+
+    <VBox spacing="10" alignment="CENTER">
+        <Button text="Slot 1" styleClass="charging-slot"/>
+        <Button text="Slot 2" styleClass="charging-slot"/>
+        <Button text="Slot 3" styleClass="charging-slot"/>
+        <Button text="Slot 4" styleClass="charging-slot"/>
+    </VBox>
+</VBox>
+    </right>
+
+    
+    <center>
+        <GridPane hgap="20" vgap="20">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+            <!-- Books (wider) -->
+            <VBox spacing="10" prefWidth="280" styleClass="card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                <Label text="Books" styleClass="card-title"/>
+                <Label text="The Great Secret" styleClass="book-name"/>
+                <Label text="Available" styleClass="book-status"/>
+                <Label text="Shelf C2"/>
+                <Button text="Borrow The Book" styleClass="primary-btn"/>
+            </VBox>
+
+            <!-- Equipment (wider) -->
+            <VBox spacing="10" prefWidth="320" styleClass="card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                <Label text="Equipment" styleClass="card-title"/>
+                <Label text="🤖" style="-fx-font-size: 48px; -fx-alignment:center;"/>
+                <Label text="AH-L"/>
+            </VBox>
+
+            <!-- Storage -->
+            <VBox spacing="10" styleClass="card" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                <Label text="Storage" styleClass="card-title"/>
+                <GridPane hgap="8" vgap="8">
+                    <children>
+                        <Button fx:id="slot1" styleClass="slot" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                        <Button fx:id="slot2" styleClass="slot" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                        <Button fx:id="slot3" styleClass="slot" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                        <Button fx:id="slot4" styleClass="slot" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+
+                        <Button fx:id="slot5" styleClass="slot" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                        <Button fx:id="slot6" styleClass="slot" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        <Button fx:id="slot7" styleClass="slot" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                        <Button fx:id="slot8" styleClass="slot" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+
+                        <Button fx:id="slot9" styleClass="slot" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                        <Button fx:id="slot10" styleClass="slot" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                    </children>
+                </GridPane>
+            </VBox>
+
+           
+            <VBox spacing="10" styleClass="card" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <Label text="Logs" styleClass="card-title"/>
+                <TableView fx:id="logTable" prefHeight="220">
+                    <columns>
+                        <TableColumn fx:id="colTimestamp" text="Timestamp" prefWidth="150"/>
+                        <TableColumn fx:id="colTask" text="Task" prefWidth="380"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+        </GridPane>
+    </center>
+
+</BorderPane>
