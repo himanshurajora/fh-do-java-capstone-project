@@ -99,6 +99,26 @@ public class DashboardController {
         colBookAuthor.setCellValueFactory(new PropertyValueFactory<>("author"));
         colBookShelf.setCellValueFactory(new PropertyValueFactory<>("shelf"));
         
+        // Add row factory to color TAKEN books red
+        tblBooks.setRowFactory(tv -> new TableRow<BookDisplay>() {
+            @Override
+            protected void updateItem(BookDisplay item, boolean empty) {
+                super.updateItem(item, empty);
+                
+                if (empty || item == null) {
+                    setStyle("");
+                    getStyleClass().remove("taken-book-row");
+                } else {
+                    Book book = systemManager.getBookById(item.getId());
+                    if (book != null && book.getStatus() == Book.BookStatus.TAKEN) {
+                        getStyleClass().add("taken-book-row");
+                    } else {
+                        getStyleClass().remove("taken-book-row");
+                    }
+                }
+            }
+        });
+        
         // Tasks table
         colTaskName.setCellValueFactory(new PropertyValueFactory<>("name"));
         colTaskStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
@@ -110,6 +130,37 @@ public class DashboardController {
         colRobotBattery.setCellValueFactory(new PropertyValueFactory<>("battery"));
         colRobotStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         colRobotLoad.setCellValueFactory(new PropertyValueFactory<>("load"));
+        
+        // Add row factory to color robots by status
+        tblRobots.setRowFactory(tv -> new TableRow<RobotDisplay>() {
+            @Override
+            protected void updateItem(RobotDisplay item, boolean empty) {
+                super.updateItem(item, empty);
+                
+                getStyleClass().removeAll("robot-charging", "robot-low-battery", "robot-busy", "robot-available");
+                
+                if (empty || item == null) {
+                    setStyle("");
+                } else {
+                    Robot robot = systemManager.getRobotById(item.getId());
+                    if (robot != null) {
+                        if (robot.isDocked()) {
+                            // Charging → Yellow
+                            getStyleClass().add("robot-charging");
+                        } else if (robot.getCurrentChargePercent() < 15.0f) {
+                            // Low battery → Red
+                            getStyleClass().add("robot-low-battery");
+                        } else if (robot.isBusy()) {
+                            // Assigned task → Blue
+                            getStyleClass().add("robot-busy");
+                        } else {
+                            // Available → Green
+                            getStyleClass().add("robot-available");
+                        }
+                    }
+                }
+            }
+        });
         
         // Shelves table
         colShelfName.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -169,6 +220,19 @@ public class DashboardController {
         logRefreshTimeline.play();
     }
     
+    private void startDataRefresh() {
+        // Refresh all panels every second for live updates
+        Timeline dataRefreshTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            refreshBooks();
+            refreshRobots();
+            refreshShelves();
+            refreshChargingStations();
+            refreshTasks();
+        }));
+        dataRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
+        dataRefreshTimeline.play();
+    }
+    
     private void loadInitialData() {
         refreshBooks();
         refreshRobots();
@@ -176,6 +240,9 @@ public class DashboardController {
         refreshChargingStations();
         refreshTasks();
         refreshLogs();
+        
+        // Start auto-refresh for all panels
+        startDataRefresh();
     }
     
     // Books Management
@@ -315,18 +382,13 @@ public class DashboardController {
         grid.setVgap(10);
         
         TextField txtId = new TextField("ROBOT-" + (systemManager.getAllRobots().size() + 1));
-        TextField txtMaxWeight = new TextField("5.0");
-        TextField txtMaxBooks = new TextField("10");
-        TextField txtExecDuration = new TextField("5.0");
+        TextField txtExecDuration = new TextField("15.0");
         
         grid.add(new Label("ID:"), 0, 0);
         grid.add(txtId, 1, 0);
-        grid.add(new Label("Max Weight (kg):"), 0, 1);
-        grid.add(txtMaxWeight, 1, 1);
-        grid.add(new Label("Max Books:"), 0, 2);
-        grid.add(txtMaxBooks, 1, 2);
-        grid.add(new Label("Exec Duration (s):"), 0, 3);
-        grid.add(txtExecDuration, 1, 3);
+        grid.add(new Label("Exec Duration (s):"), 0, 1);
+        grid.add(txtExecDuration, 1, 1);
+        grid.add(new Label("Note: Each robot carries 1 book at a time"), 0, 2, 2, 1);
         
         dialog.getDialogPane().setContent(grid);
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -336,8 +398,6 @@ public class DashboardController {
             try {
                 systemManager.addRobot(
                     txtId.getText(),
-                    Float.parseFloat(txtMaxWeight.getText()),
-                    Integer.parseInt(txtMaxBooks.getText()),
                     Float.parseFloat(txtExecDuration.getText())
                 );
                 refreshRobots();
@@ -360,13 +420,22 @@ public class DashboardController {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Robot Details");
             alert.setHeaderText(robot.getId());
+            
+            String carryingInfo = robot.getCarryingBook() != null ? 
+                robot.getCarryingBook().getTitle() : "None";
+            
+            String taskInfo = robot.getCurrentTaskId() != null ?
+                robot.getCurrentTaskId() : "None";
+            
             alert.setContentText(
                 "Battery: " + String.format("%.1f", robot.getCurrentChargePercent()) + "%\n" +
-                "Max Weight: " + robot.getMaxWeightKg() + " kg\n" +
-                "Max Books: " + robot.getMaxBookCount() + "\n" +
-                "Current Load: " + String.format("%.2f", robot.getCurrentLoadWeight()) + " kg\n" +
-                "Carrying Books: " + robot.getCarryingBooks().size() + "\n" +
-                "Docked: " + (robot.isDocked() ? "Yes" : "No")
+                "Status: " + (robot.isDocked() ? "Charging" : robot.isBusy() ? "Busy" : "Idle") + "\n" +
+                "Current Task: " + taskInfo + "\n" +
+                "Carrying Book: " + carryingInfo + "\n" +
+                "Execution Time: 15 seconds per task\n" +
+                "Battery Drain: 5% per task\n" +
+                "Auto-Charge Threshold: <15%\n" +
+                "Capacity: 1 book at a time"
             );
             alert.showAndWait();
         }
@@ -451,6 +520,38 @@ public class DashboardController {
                 " (" + station.getOccupiedSlots() + "/" + station.getTotalSlots() + ")");
         }
         lstChargingStations.setItems(stations);
+        
+        // Add cell factory to color stations by occupancy
+        lstChargingStations.setCellFactory(lv -> new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                
+                getStyleClass().removeAll("station-partial", "station-full");
+                
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(item);
+                    String stationId = item.split(":")[0];
+                    ChargingStation station = systemManager.getStationById(stationId);
+                    
+                    if (station != null) {
+                        int occupied = station.getOccupiedSlots();
+                        int total = station.getTotalSlots();
+                        
+                        if (occupied == total && total > 0) {
+                            // All slots full → Red
+                            getStyleClass().add("station-full");
+                        } else if (occupied > 0) {
+                            // Some slots full → Yellow
+                            getStyleClass().add("station-partial");
+                        }
+                    }
+                }
+            }
+        });
     }
     
     // Shelves Management
@@ -619,7 +720,15 @@ public class DashboardController {
             this.id = book.getId();
             this.title = book.getTitle();
             this.author = book.getAuthor();
-            this.shelf = book.getShelfId() != null ? book.getShelfId() : "None";
+            
+            // Show status in shelf column
+            if (book.getStatus() == Book.BookStatus.TAKEN) {
+                this.shelf = "[TAKEN]";
+            } else if (book.getStatus() == Book.BookStatus.IN_TRANSIT) {
+                this.shelf = "[IN TRANSIT]";
+            } else {
+                this.shelf = book.getShelfId() != null ? book.getShelfId() : "None";
+            }
         }
         
         public String getId() { return id; }
@@ -656,9 +765,26 @@ public class DashboardController {
         public RobotDisplay(Robot robot) {
             this.id = robot.getId();
             this.battery = String.format("%.1f%%", robot.getCurrentChargePercent());
-            this.status = robot.isDocked() ? "Charging" : 
-                         robot.getCarryingBooks().isEmpty() ? "Idle" : "Busy";
-            this.load = String.format("%.1f/%.1f kg", robot.getCurrentLoadWeight(), robot.getMaxWeightKg());
+            
+            if (robot.isDocked()) {
+                this.status = "Charging";
+            } else if (robot.getCurrentTaskId() != null) {
+                this.status = "Executing Task";
+            } else if (robot.getCarryingBook() != null) {
+                this.status = "Carrying Book";
+            } else {
+                this.status = "Idle";
+            }
+            
+            if (robot.getCarryingBook() != null) {
+                String bookTitle = robot.getCarryingBook().getTitle();
+                if (bookTitle.length() > 15) {
+                    bookTitle = bookTitle.substring(0, 12) + "...";
+                }
+                this.load = bookTitle;
+            } else {
+                this.load = "Empty";
+            }
         }
         
         public String getId() { return id; }

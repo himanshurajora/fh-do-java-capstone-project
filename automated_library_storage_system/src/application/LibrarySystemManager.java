@@ -64,11 +64,19 @@ public class LibrarySystemManager {
         for (SystemState.BookData bookData : systemState.getBooks()) {
             Book book = new Book(bookData.getId(), bookData.getTitle(), bookData.getAuthor(), bookData.getWeightKg());
             book.setShelfId(bookData.getShelfId());
+            
+            // Set book status from saved state
+            try {
+                book.setStatus(Book.BookStatus.valueOf(bookData.getStatus()));
+            } catch (Exception e) {
+                book.setStatus(Book.BookStatus.AVAILABLE);
+            }
+            
             library.addBook(book);
             bookMap.put(book.getId(), book);
             
-            // Add book to its shelf
-            if (bookData.getShelfId() != null) {
+            // Add book to its shelf if available
+            if (book.isAvailable() && bookData.getShelfId() != null) {
                 Shelf shelf = shelfMap.get(bookData.getShelfId());
                 if (shelf != null && !shelf.isFull()) {
                     shelf.addBook(book);
@@ -91,9 +99,7 @@ public class LibrarySystemManager {
         for (SystemState.RobotData robotData : systemState.getRobots()) {
             Robot robot = new Robot(
                 robotData.getId(),
-                robotData.getExecutionDuration(),
-                robotData.getMaxWeightKg(),
-                robotData.getMaxBookCount()
+                robotData.getExecutionDuration()
             );
             robot.setCurrentChargePercent(robotData.getCurrentChargePercent());
             library.addRobot(robot);
@@ -149,6 +155,7 @@ public class LibrarySystemManager {
                 bookData.setAuthor(book.getAuthor());
                 bookData.setWeightKg(book.getWeightKg());
                 bookData.setShelfId(book.getShelfId());
+                bookData.setStatus(book.getStatus().toString());
                 systemState.getBooks().add(bookData);
             }
             
@@ -156,8 +163,6 @@ public class LibrarySystemManager {
             for (Robot robot : robotMap.values()) {
                 SystemState.RobotData robotData = new SystemState.RobotData();
                 robotData.setId(robot.getId());
-                robotData.setMaxWeightKg(robot.getMaxWeightKg());
-                robotData.setMaxBookCount(robot.getMaxBookCount());
                 robotData.setCurrentChargePercent(robot.getCurrentChargePercent());
                 robotData.setExecutionDuration(robot.getExecutionDuration());
                 systemState.getRobots().add(robotData);
@@ -180,6 +185,12 @@ public class LibrarySystemManager {
                 return;
             }
             
+            if (!book.isAvailable()) {
+                setStatusMessage("Book is not available: " + bookTitle + " [" + book.getStatus() + "]");
+                Logger.logSystem("WARN", "Book not available: " + bookTitle);
+                return;
+            }
+            
             if (book.getShelfId() == null) {
                 setStatusMessage("Book is not on any shelf: " + bookTitle);
                 return;
@@ -194,8 +205,21 @@ public class LibrarySystemManager {
                 "AUTO"
             );
             
+            // Link the book to the task
+            task.setRelatedBook(book);
+            
+            // Remove book from shelf (it will be in transit)
+            Shelf shelf = shelfMap.get(book.getShelfId());
+            if (shelf != null) {
+                try {
+                    shelf.removeBook(book);
+                } catch (Exception e) {
+                    Logger.logSystem("WARN", "Could not remove book from shelf: " + e.getMessage());
+                }
+            }
+            
             concurrentSystem.addTask(task);
-            setStatusMessage("Task created: Get " + book.getTitle());
+            setStatusMessage("Task created: Get " + book.getTitle() + " (15 seconds)");
             Logger.logTasks("INFO", "Get book task created: " + book.getTitle());
             
         } catch (Exception e) {
@@ -289,9 +313,9 @@ public class LibrarySystemManager {
     }
     
     // Robot operations
-    public void addRobot(String id, float maxWeight, int maxBooks, float execDuration) {
+    public void addRobot(String id, float execDuration) {
         try {
-            Robot robot = new Robot(id, execDuration, maxWeight, maxBooks);
+            Robot robot = new Robot(id, execDuration);
             robot.setCurrentChargePercent(100.0f);
             
             library.addRobot(robot);

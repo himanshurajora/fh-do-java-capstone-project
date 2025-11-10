@@ -1,32 +1,23 @@
 package application.modules;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import application.modules.RobotExceptions.LowBatteryException;
 import application.modules.RobotExceptions.OverloadException;
 import application.modules.RobotExceptions.TaskNotFoundException;
 
 public class Robot extends Resource {
-    private float maxWeightKg;
-    private int maxBookCount;
+    private static final int MAX_BOOKS_PER_ROBOT = 1; // Only 1 book at a time
+    
     private float currentChargePercent = 100;
     private boolean isDocked = false;
-    private List<Book> carryingBooks = new ArrayList<>();
+    private Book carryingBook = null;
+    private String currentTaskId = null;
 
-    public Robot(String id, float executionDuration, float maxWeightKg, int maxBookCount) {
+    public Robot(String id, float executionDuration) {
         super(id, executionDuration);
-        this.maxWeightKg = maxWeightKg;
-        this.maxBookCount = maxBookCount;
     }
 
-    public boolean canCarry(List<Book> books) {
-        float totalWeight = 0;
-        for (Book book : books) {
-            totalWeight += book.getWeightKg();
-        }
-        int totalBooks = carryingBooks.size() + books.size();
-        return totalWeight + getCurrentLoadWeight() <= maxWeightKg && totalBooks <= maxBookCount;
+    public boolean canCarry() {
+        return carryingBook == null && currentTaskId == null;
     }
 
     public boolean needsCharging(float thresholdPercent) {
@@ -35,25 +26,30 @@ public class Robot extends Resource {
 
     public void dock() {
         isDocked = true;
-        application.Logger.logResources(getId(), "INFO", "Docked");
+        application.Logger.logResources(getId(), "INFO", "Docked for charging");
     }
 
     public void undock() {
         isDocked = false;
         currentChargePercent = 100;
-        application.Logger.logResources(getId(), "INFO", "Undocked and charged to 100%");
+        application.Logger.logResources(getId(), "INFO", "Undocked - charged to 100%");
     }
 
-    public void addBooks(List<Book> books) {
-        if (canCarry(books)) {
-            carryingBooks.addAll(books);
-            application.Logger.logResources(getId(), "INFO", "Added books: count=" + books.size());
+    public void pickUpBook(Book book) {
+        if (carryingBook != null) {
+            throw new IllegalStateException("Robot already carrying a book");
         }
+        this.carryingBook = book;
+        application.Logger.logResources(getId(), "INFO", "Picked up book: " + book.getTitle());
     }
 
-    public void removeBooks(List<Book> books) {
-        carryingBooks.removeAll(books);
-        application.Logger.logResources(getId(), "INFO", "Removed books: count=" + books.size());
+    public Book deliverBook() {
+        Book book = this.carryingBook;
+        this.carryingBook = null;
+        if (book != null) {
+            application.Logger.logResources(getId(), "INFO", "Delivered book: " + book.getTitle());
+        }
+        return book;
     }
 
     public void execute(Task task) throws RobotExceptions {
@@ -61,49 +57,32 @@ public class Robot extends Resource {
             if (task == null) {
                 throw new TaskNotFoundException("Task is null");
             }
-            if (!canCarry(task.getBooks())) {
-                throw new OverloadException("Overload: cannot carry books");
+            if (carryingBook != null) {
+                throw new OverloadException("Robot already carrying a book");
             }
             if (needsCharging(20)) {
                 throw new LowBatteryException("Battery too low");
             }
-            addBooks(task.getBooks());
-            application.Logger.logResources(getId(), "INFO", "Executed task: " + task.getTaskId());
+            
+            currentTaskId = task.getTaskId();
+            application.Logger.logResources(getId(), "INFO", "Executing task: " + task.getTaskId());
+            
         } catch (TaskNotFoundException | OverloadException | LowBatteryException e) {
             application.Logger.logResources(getId(), "ERROR", "Execution failed: " + e.getMessage());
             throw new RobotExceptions("Robot execution failed", e);
         } catch (Exception e) {
             application.Logger.logResources(getId(), "ERROR", "Execution error: " + e.getMessage());
-            throw new RobotExceptions("Error occured during execution", e);
+            throw new RobotExceptions("Error occurred during execution", e);
         }
     }
-
-    public float getCurrentLoadWeight() {
-        float sum = 0;
-        for (Book book : carryingBooks) {
-            sum += book.getWeightKg();
-        }
-        return sum;
+    
+    public void completeTask() {
+        currentTaskId = null;
+        application.Logger.logResources(getId(), "INFO", "Task completed");
     }
 
     public String getId() {
         return super.getId();
-    }
-
-    public float getMaxWeightKg() {
-        return maxWeightKg;
-    }
-
-    public void setMaxWeightKg(float maxWeightKg) {
-        this.maxWeightKg = maxWeightKg;
-    }
-
-    public int getMaxBookCount() {
-        return maxBookCount;
-    }
-
-    public void setMaxBookCount(int maxBookCount) {
-        this.maxBookCount = maxBookCount;
     }
 
     public float getCurrentChargePercent() {
@@ -122,11 +101,15 @@ public class Robot extends Resource {
         isDocked = docked;
     }
 
-    public List<Book> getCarryingBooks() {
-        return carryingBooks;
+    public Book getCarryingBook() {
+        return carryingBook;
     }
 
-    public void setCarryingBooks(List<Book> carryingBooks) {
-        this.carryingBooks = carryingBooks;
+    public String getCurrentTaskId() {
+        return currentTaskId;
+    }
+    
+    public boolean isBusy() {
+        return currentTaskId != null || carryingBook != null;
     }
 }

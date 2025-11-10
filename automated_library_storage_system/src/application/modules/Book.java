@@ -1,11 +1,19 @@
 package application.modules;
 
 public class Book {
+    public enum BookStatus {
+        AVAILABLE,    // On shelf, available
+        IN_TRANSIT,   // Being carried by robot
+        TAKEN         // Taken by user
+    }
+    
     private String id;
     private String title;
     private String author;
     private float weightKg;
     private String shelfId;
+    private BookStatus status;
+    private String assignedRobotId;
 
     public Book(String id, String title, String author, float weightKg) {
         if (id == null || id.trim().isEmpty()) {
@@ -21,6 +29,7 @@ public class Book {
         this.title = title;
         this.author = author;
         this.weightKg = weightKg;
+        this.status = BookStatus.AVAILABLE;
         application.Logger.logStorage(id, "INFO", "Book created: " + title + " by " + author);
     }
 
@@ -38,9 +47,22 @@ public class Book {
     
     public String getShelfId() { return shelfId; }
     public void setShelfId(String shelfId) { this.shelfId = shelfId; }
+    
+    public BookStatus getStatus() { return status; }
+    public void setStatus(BookStatus status) { 
+        this.status = status;
+        application.Logger.logStorage(id, "INFO", "Book status changed to: " + status);
+    }
+    
+    public String getAssignedRobotId() { return assignedRobotId; }
+    public void setAssignedRobotId(String assignedRobotId) { this.assignedRobotId = assignedRobotId; }
+    
+    public boolean isAvailable() {
+        return status == BookStatus.AVAILABLE;
+    }
 
     @Override
     public String toString() {
-        return title + " by " + author;
+        return title + " by " + author + " [" + status + "]";
     }
 }

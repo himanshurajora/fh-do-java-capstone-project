@@ -5,70 +5,77 @@
       "title": "1984",
       "author": "George Orwell",
       "weightKg": 1.3047981,
-      "shelfId": "SHELF-2"
+      "status": "TAKEN"
     },
     {
       "id": "BOOK-3",
       "title": "To Kill a Mockingbird",
       "author": "Harper Lee",
       "weightKg": 0.79866385,
-      "shelfId": "SHELF-3"
+      "shelfId": "SHELF-3",
+      "status": "AVAILABLE"
     },
     {
       "id": "BOOK-1",
       "title": "The Great Gatsby",
       "author": "F. Scott Fitzgerald",
       "weightKg": 0.5623453,
-      "shelfId": "SHELF-1"
+      "shelfId": "SHELF-1",
+      "status": "AVAILABLE"
     },
     {
       "id": "BOOK-10",
       "title": "Fahrenheit 451",
       "author": "Ray Bradbury",
       "weightKg": 0.66297334,
-      "shelfId": "SHELF-5"
+      "shelfId": "SHELF-5",
+      "status": "AVAILABLE"
     },
     {
       "id": "BOOK-8",
       "title": "Animal Farm",
       "author": "George Orwell",
       "weightKg": 1.0410838,
-      "shelfId": "SHELF-3"
+      "status": "TAKEN"
     },
     {
       "id": "BOOK-9",
       "title": "The Hobbit",
       "author": "J.R.R. Tolkien",
       "weightKg": 1.3272519,
-      "shelfId": "SHELF-4"
+      "status": "TAKEN"
     },
     {
       "id": "BOOK-6",
       "title": "Harry Potter",
       "author": "J.K. Rowling",
       "weightKg": 0.87483954,
-      "shelfId": "SHELF-1"
+      "shelfId": "SHELF-1",
+      "status": "AVAILABLE"
     },
     {
       "id": "BOOK-7",
       "title": "The Lord of the Rings",
       "author": "J.R.R. Tolkien",
       "weightKg": 1.0001677,
-      "shelfId": "SHELF-2"
+      "shelfId": "SHELF-2",
+      "status": "AVAILABLE"
     },
     {
       "id": "BOOK-4",
       "title": "Pride and Prejudice",
       "author": "Jane Austen",
       "weightKg": 1.3850604,
-      "shelfId": "SHELF-4"
+      "shelfId": "SHELF-4",
+      "status": "AVAILABLE"
     },
     {
       "id": "BOOK-5",
       "title": "The Catcher in the Rye",
       "author": "J.D. Salinger",
       "weightKg": 0.5846951,
-      "shelfId": "SHELF-5"
+      "shelfId": "SHELF-5",
+      "status": "AVAILABLE"
     }
   ],
   "shelves": [
@@ -121,36 +128,26 @@
   "robots": [
     {
       "id": "ROBOT-4",
-      "maxWeightKg": 5.0,
-      "maxBookCount": 10,
-      "currentChargePercent": 100.0,
+      "currentChargePercent": 87.0,
       "executionDuration": 5.0
     },
     {
       "id": "ROBOT-3",
-      "maxWeightKg": 5.0,
-      "maxBookCount": 10,
       "currentChargePercent": 100.0,
       "executionDuration": 5.0
     },
     {
       "id": "ROBOT-5",
-      "maxWeightKg": 5.0,
-      "maxBookCount": 10,
       "currentChargePercent": 100.0,
       "executionDuration": 5.0
     },
     {
       "id": "ROBOT-2",
-      "maxWeightKg": 5.0,
-      "maxBookCount": 10,
       "currentChargePercent": 100.0,
       "executionDuration": 5.0
     },
     {
       "id": "ROBOT-1",
-      "maxWeightKg": 5.0,
-      "maxBookCount": 10,
       "currentChargePercent": 100.0,
       "executionDuration": 5.0
     }

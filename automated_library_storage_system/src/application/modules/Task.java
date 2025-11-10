@@ -19,6 +19,8 @@ public class Task {
     private List<String> logEntries;
 
 
+    private Book relatedBook;
+    
     public Task(String taskId, String taskName, String description, TaskPriority priority, String assignedTo) {
         this.taskId = taskId;
         this.taskName = taskName;
@@ -30,6 +32,14 @@ public class Task {
         this.dueDate = createdAt.plusDays(7);
         this.logEntries = new ArrayList<>();
         logActivity("TASK_CREATED", "Task created and assigned to " + assignedTo);
+    }
+    
+    public Book getRelatedBook() {
+        return relatedBook;
+    }
+    
+    public void setRelatedBook(Book book) {
+        this.relatedBook = book;
     }
 
     public void startTask() {

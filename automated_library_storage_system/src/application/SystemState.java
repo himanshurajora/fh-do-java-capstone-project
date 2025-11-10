@@ -86,14 +86,12 @@ public class SystemState {
             state.stations.add(station);
         }
         
-        // Create default robots
+        // Create default robots (15 second execution, 1 book at a time)
         for (int i = 1; i <= 5; i++) {
             RobotData robot = new RobotData();
             robot.setId("ROBOT-" + i);
-            robot.setMaxWeightKg(5.0f);
-            robot.setMaxBookCount(10);
             robot.setCurrentChargePercent(100.0f);
-            robot.setExecutionDuration(5.0f);
+            robot.setExecutionDuration(15.0f);
             state.robots.add(robot);
         }
         
@@ -157,6 +155,7 @@ public class SystemState {
         private String author;
         private float weightKg;
         private String shelfId;
+        private String status = "AVAILABLE";
         
         public String getId() { return id; }
         public void setId(String id) { this.id = id; }
@@ -172,6 +171,9 @@ public class SystemState {
         
         public String getShelfId() { return shelfId; }
         public void setShelfId(String shelfId) { this.shelfId = shelfId; }
+        
+        public String getStatus() { return status; }
+        public void setStatus(String status) { this.status = status; }
     }
     
     public static class ShelfData {
@@ -195,19 +197,11 @@ public class SystemState {
     
     public static class RobotData {
         private String id;
-        private float maxWeightKg;
-        private int maxBookCount;
         private float currentChargePercent;
         private float executionDuration;
         
         public String getId() { return id; }
         public void setId(String id) { this.id = id; }
-        
-        public float getMaxWeightKg() { return maxWeightKg; }
-        public void setMaxWeightKg(float maxWeightKg) { this.maxWeightKg = maxWeightKg; }
-        
-        public int getMaxBookCount() { return maxBookCount; }
-        public void setMaxBookCount(int maxBookCount) { this.maxBookCount = maxBookCount; }
         
         public float getCurrentChargePercent() { return currentChargePercent; }
         public void setCurrentChargePercent(float currentChargePercent) { this.currentChargePercent = currentChargePercent; }

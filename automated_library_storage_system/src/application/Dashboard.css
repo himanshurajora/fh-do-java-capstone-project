@@ -124,6 +124,96 @@
     -fx-background-color: #E3F2FD;
 }
 
+/* Taken book row styling */
+.taken-book-row {
+    -fx-background-color: #ffebee;
+    -fx-text-fill: #c62828;
+}
+
+.taken-book-row:hover {
+    -fx-background-color: #ffcdd2;
+}
+
+.taken-book-row:selected {
+    -fx-background-color: #ef9a9a;
+}
+
+.taken-book-row .text {
+    -fx-fill: #c62828;
+}
+
+/* Robot row styling by status */
+.robot-charging {
+    -fx-background-color: #fff9c4;
+    -fx-text-fill: #f57f17;
+}
+
+.robot-charging:hover {
+    -fx-background-color: #fff59d;
+}
+
+.robot-charging:selected {
+    -fx-background-color: #fff176;
+}
+
+.robot-low-battery {
+    -fx-background-color: #ffebee;
+    -fx-text-fill: #c62828;
+}
+
+.robot-low-battery:hover {
+    -fx-background-color: #ffcdd2;
+}
+
+.robot-low-battery:selected {
+    -fx-background-color: #ef9a9a;
+}
+
+.robot-busy {
+    -fx-background-color: #e3f2fd;
+    -fx-text-fill: #1565c0;
+}
+
+.robot-busy:hover {
+    -fx-background-color: #bbdefb;
+}
+
+.robot-busy:selected {
+    -fx-background-color: #90caf9;
+}
+
+.robot-available {
+    -fx-background-color: #e8f5e9;
+    -fx-text-fill: #2e7d32;
+}
+
+.robot-available:hover {
+    -fx-background-color: #c8e6c9;
+}
+
+.robot-available:selected {
+    -fx-background-color: #a5d6a7;
+}
+
+/* Charging station list cell styling */
+.station-partial {
+    -fx-background-color: #fff9c4;
+    -fx-text-fill: #f57f17;
+}
+
+.station-partial:hover {
+    -fx-background-color: #fff59d;
+}
+
+.station-full {
+    -fx-background-color: #ffebee;
+    -fx-text-fill: #c62828;
+}
+
+.station-full:hover {
+    -fx-background-color: #ffcdd2;
+}
+
 /* Text fields */
 .text-field {
     -fx-background-radius: 6;

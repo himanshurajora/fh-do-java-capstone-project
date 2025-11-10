@@ -165,7 +165,19 @@ public class UnifiedConcurrentSystem {
         
         synchronized (this) {
             if (!taskQueue.isEmpty() && !availableRobots.isEmpty()) {
-                for (Robot robot : availableRobots) {
+                for (Robot robot : new ArrayList<>(availableRobots)) {
+                    // Check if robot has enough battery for assignment (must be >= 15%)
+                    if (robot.getCurrentChargePercent() < 15.0f) {
+                        // Reject assignment - send robot to charging
+                        application.Logger.logResources("SYSTEM", "WARN", 
+                            robot.getId() + " rejected task assignment - battery too low (" + 
+                            String.format("%.1f", robot.getCurrentChargePercent()) + "%)");
+                        
+                        availableRobots.remove(robot);
+                        requestCharging(robot);
+                        continue; // Try next robot
+                    }
+                    
                     if (robot.getCurrentChargePercent() >= 20) {
                         taskToExecute = taskQueue.remove(0);
                         robotToUse = robot;
@@ -182,7 +194,8 @@ public class UnifiedConcurrentSystem {
             final Robot finalRobot = robotToUse;
             
             application.Logger.logResources("SYSTEM", "INFO", 
-                "Task " + finalTask.getTaskId() + " assigned to AGV " + finalRobot.getId());
+                "Task " + finalTask.getTaskId() + " assigned to " + finalRobot.getId() + 
+                " (Battery: " + String.format("%.1f", finalRobot.getCurrentChargePercent()) + "%)");
             
             Future<?> future = taskExecutor.submit(() -> {
                 try {
@@ -203,25 +216,57 @@ public class UnifiedConcurrentSystem {
         synchronized (this) {
             busyRobots.remove(robot);
             
-            if (robot.getCurrentChargePercent() < 20) {
+            // Check if robot needs charging after task completion
+            if (robot.getCurrentChargePercent() < 15.0f) {
+                application.Logger.logResources("SYSTEM", "INFO", 
+                    robot.getId() + " released - battery low (" + 
+                    String.format("%.1f", robot.getCurrentChargePercent()) + "%), sending to charge");
                 requestCharging(robot);
             } else {
                 availableRobots.add(robot);
+                application.Logger.logResources("SYSTEM", "INFO", 
+                    robot.getId() + " released - available for tasks (Battery: " + 
+                    String.format("%.1f", robot.getCurrentChargePercent()) + "%)");
             }
-            
-            application.Logger.logResources("SYSTEM", "INFO", 
-                "AGV " + robot.getId() + " released");
         }
     }
     
     private void performTaskExecution(Task task, Robot robot) {
         application.Logger.logResources("SYSTEM", "INFO", 
-            "Task " + task.getTaskId() + " started execution on AGV " + robot.getId());
+            "Task " + task.getTaskId() + " started execution on " + robot.getId());
         
         try {
             task.startTask();
             robot.execute(task);
-            Thread.sleep((long) (robot.getExecutionDuration() * 1000));
+            
+            // Pick up book if related task
+            Book book = task.getRelatedBook();
+            if (book != null) {
+                robot.pickUpBook(book);
+                book.setStatus(Book.BookStatus.IN_TRANSIT);
+                book.setAssignedRobotId(robot.getId());
+                application.Logger.logResources("SYSTEM", "INFO", 
+                    robot.getId() + " picked up book: " + book.getTitle());
+            }
+            
+            // Task execution takes 15 seconds
+            Thread.sleep(15000);
+            
+            // Battery drain: 5% per task
+            float batteryDrain = 5.0f;
+            float newBattery = Math.max(0, robot.getCurrentChargePercent() - batteryDrain);
+            robot.setCurrentChargePercent(newBattery);
+            
+            // Deliver book
+            if (book != null) {
+                robot.deliverBook();
+                book.setStatus(Book.BookStatus.TAKEN);
+                book.setAssignedRobotId(null);
+                application.Logger.logResources("SYSTEM", "INFO", 
+                    robot.getId() + " delivered book: " + book.getTitle());
+            }
+            
+            robot.completeTask();
             task.completeTask();
             
             synchronized (this) {
@@ -229,7 +274,8 @@ public class UnifiedConcurrentSystem {
             }
             
             application.Logger.logResources("SYSTEM", "INFO", 
-                "Task " + task.getTaskId() + " completed successfully on AGV " + robot.getId());
+                "Task " + task.getTaskId() + " completed successfully on " + robot.getId() + 
+                " (Battery: " + String.format("%.1f", robot.getCurrentChargePercent()) + "%)");
             
         } catch (RobotExceptions e) {
             synchronized (this) {
@@ -237,13 +283,25 @@ public class UnifiedConcurrentSystem {
             }
             task.cancelTask();
             
+            Book book = task.getRelatedBook();
+            if (book != null) {
+                book.setStatus(Book.BookStatus.AVAILABLE);
+                book.setAssignedRobotId(null);
+            }
+            
             application.Logger.logResources("SYSTEM", "ERROR", 
-                "Task " + task.getTaskId() + " failed on AGV " + robot.getId() + ": " + e.getMessage());
+                "Task " + task.getTaskId() + " failed on " + robot.getId() + ": " + e.getMessage());
             
         } catch (InterruptedException e) {
             task.cancelTask();
             synchronized (this) {
                 totalTasksFailed++;
+            }
+            
+            Book book = task.getRelatedBook();
+            if (book != null) {
+                book.setStatus(Book.BookStatus.AVAILABLE);
+                book.setAssignedRobotId(null);
             }
             
             application.Logger.logResources("SYSTEM", "ERROR", 
