@@ -1,8 +1,13 @@
 package application;
 
+import application.modules.*;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.*;
 
 public class Main {
  
@@ -120,15 +125,15 @@ public class Main {
 		Logger.logResources(station, "INFO", "Robot RBT-01 charged to 100%");
 
 		// Task management system demo
-		application.modules.TaskManager tm = new application.modules.TaskManager();
-		application.modules.Task t1 = tm.createTask("PickOrder-1001", "Pick 3 books from A2", application.modules.TaskPriority.HIGH, robotA);
-		application.modules.Task t2 = tm.createTask("ChargeRobot", "Charge RBT-02 at CHG-1", application.modules.TaskPriority.MEDIUM, robotB);
+		TaskManager tm = new TaskManager();
+		Task t1 = tm.createTask("PickOrder-1001", "Pick 3 books from A2", TaskPriority.HIGH, robotA);
+		Task t2 = tm.createTask("ChargeRobot", "Charge RBT-02 at CHG-1", TaskPriority.MEDIUM, robotB);
 		try {
 			tm.startTask(t1.getTaskId());
 			tm.completeTask(t1.getTaskId());
 			tm.startTask(t2.getTaskId());
 			tm.cancelTask(t2.getTaskId());
-		} catch (application.modules.RobotExceptions.TaskNotFoundException e) {
+		} catch (RobotExceptions.TaskNotFoundException e) {
 			Logger.logSystem("ERROR", "Task operation failed: " + e.getMessage());
 		}
 		Logger.logSystem("INFO", "Tasks summary: total=" + tm.getAllTasks().size());
@@ -161,5 +166,109 @@ public class Main {
     	}
 
     	System.out.println("Demo complete. Logs are under automated_library_storage_system/logs");
+    	
+    	runConcurrentSystemDemo();
+    }
+    
+    private static final Random random = new Random();
+    private static int taskCounter = 1;
+    
+    private static void runConcurrentSystemDemo() {
+        System.out.println("\n" + "=".repeat(60));
+        System.out.println("CONCURRENT SYSTEM DEMONSTRATION");
+        System.out.println("=".repeat(60));
+        
+        int numChargingStations = 3;
+        int numAGVs = 5;
+        int numTasks = 10;
+        
+        UnifiedConcurrentSystem system = new UnifiedConcurrentSystem(numChargingStations, numAGVs);
+        
+        System.out.println("Charging Stations: " + numChargingStations);
+        System.out.println("Available AGVs: " + numAGVs);
+        System.out.println("Tasks to Execute: " + numTasks);
+        System.out.println("AGVs will arrive at random intervals\n");
+        
+        ScheduledExecutorService monitor = Executors.newScheduledThreadPool(1);
+        monitor.scheduleAtFixedRate(() -> {
+            System.out.println(String.format("[%s] Status - Charging: %d (Queue: %d), Available AGVs: %d, Busy AGVs: %d, Task Queue: %d",
+                getCurrentTime(), system.getActiveChargingCount(), system.getChargingQueueSize(),
+                system.getAvailableRobotCount(), system.getBusyRobotCount(), system.getTaskQueueSize()));
+        }, 0, 2, TimeUnit.SECONDS);
+        
+        for (int i = 0; i < numAGVs; i++) {
+            int delaySeconds = random.nextInt(5) + 1;
+            final int agvId = i + 1;
+            
+            try {
+                Thread.sleep(delaySeconds * 1000);
+                
+                Robot agv = createAGV(agvId);
+                System.out.println(String.format("[%s] AGV %s arrived (Charge: %.1f%%)",
+                    getCurrentTime(), agv.getId(), agv.getCurrentChargePercent()));
+                
+                system.addRobot(agv);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
+        
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+        }
+        
+        List<Task> tasks = createTasks(numTasks);
+        System.out.println("\nAdding " + numTasks + " tasks to the system...\n");
+        system.addTasks(tasks);
+        
+        long startTime = System.currentTimeMillis();
+        system.waitForAll();
+        long endTime = System.currentTimeMillis();
+        long duration = (endTime - startTime) / 1000;
+        
+        monitor.shutdown();
+        
+        System.out.println("\n" + "=".repeat(60));
+        System.out.println("SYSTEM STATISTICS");
+        System.out.println("=".repeat(60));
+        System.out.println("Total Charged: " + system.getTotalCharged());
+        System.out.println("Total Left Charging Queue: " + system.getTotalLeftChargingQueue());
+        System.out.println("Total Tasks Completed: " + system.getTotalTasksCompleted());
+        System.out.println("Total Tasks Failed: " + system.getTotalTasksFailed());
+        System.out.println("Total Duration: " + duration + " seconds");
+        System.out.println("=".repeat(60));
+        
+        system.shutdown();
+    }
+    
+    private static Robot createAGV(int id) {
+        float initialCharge = random.nextFloat() * 40 + 10;
+        Robot robot = new Robot("AGV_" + String.format("%03d", id), 5.0f, 50.0f, 10);
+        robot.setCurrentChargePercent(initialCharge);
+        return robot;
+    }
+    
+    private static List<Task> createTasks(int count) {
+        List<Task> tasks = new ArrayList<>();
+        TaskPriority[] priorities = TaskPriority.values();
+        
+        for (int i = 0; i < count; i++) {
+            String taskId = "TASK_" + taskCounter;
+            taskCounter++;
+            String taskName = "Task " + (i + 1);
+            String description = "Execute task " + (i + 1);
+            TaskPriority priority = priorities[random.nextInt(priorities.length)];
+            String assignedTo = "AGV_" + String.format("%03d", (i % 5) + 1);
+            
+            Task task = new Task(taskId, taskName, description, priority, assignedTo);
+            tasks.add(task);
+        }
+        
+        return tasks;
+    }
+    
+    private static String getCurrentTime() {
+        return java.time.LocalTime.now().toString().substring(0, 8);
     }
 }

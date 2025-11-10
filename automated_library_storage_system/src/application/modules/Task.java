@@ -123,7 +123,6 @@ public class Task {
     }
 
 	public List<Book> getBooks() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<>();
 	}
 }
