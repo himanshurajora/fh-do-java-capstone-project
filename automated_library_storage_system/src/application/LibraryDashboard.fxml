@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="application.DashboardController"
+            stylesheets="@Dashboard.css"
+            prefWidth="1400" prefHeight="900">
+
+    <!-- TOP BAR -->
+    <top>
+        <VBox>
+            <HBox spacing="20" styleClass="top-bar">
+                <padding><Insets top="12" right="20" bottom="12" left="20"/></padding>
+                <Label text="Automated Library Storage System" styleClass="nav-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="clockLabel" text="00:00:00" styleClass="nav-item"/>
+            </HBox>
+            
+            <!-- Stats Bar -->
+            <HBox spacing="15" styleClass="stats-bar" alignment="CENTER_LEFT">
+                <padding><Insets top="10" right="20" bottom="10" left="20"/></padding>
+                
+                <VBox alignment="CENTER" spacing="2">
+                    <Label text="Total Books" styleClass="stat-label"/>
+                    <Label fx:id="lblTotalBooks" text="0" styleClass="stat-value"/>
+                </VBox>
+                
+                <Separator orientation="VERTICAL"/>
+                
+                <VBox alignment="CENTER" spacing="2">
+                    <Label text="Available Robots" styleClass="stat-label"/>
+                    <Label fx:id="lblAvailableRobots" text="0" styleClass="stat-value"/>
+                </VBox>
+                
+                <VBox alignment="CENTER" spacing="2">
+                    <Label text="Busy Robots" styleClass="stat-label"/>
+                    <Label fx:id="lblBusyRobots" text="0" styleClass="stat-value"/>
+                </VBox>
+                
+                <VBox alignment="CENTER" spacing="2">
+                    <Label text="Charging" styleClass="stat-label"/>
+                    <Label fx:id="lblChargingRobots" text="0" styleClass="stat-value"/>
+                </VBox>
+                
+                <Separator orientation="VERTICAL"/>
+                
+                <VBox alignment="CENTER" spacing="2">
+                    <Label text="Tasks Queue" styleClass="stat-label"/>
+                    <Label fx:id="lblTasksQueue" text="0" styleClass="stat-value"/>
+                </VBox>
+                
+                <VBox alignment="CENTER" spacing="2">
+                    <Label text="Completed" styleClass="stat-label"/>
+                    <Label fx:id="lblTasksCompleted" text="0" styleClass="stat-value"/>
+                </VBox>
+                
+                <VBox alignment="CENTER" spacing="2">
+                    <Label text="Failed" styleClass="stat-label"/>
+                    <Label fx:id="lblTasksFailed" text="0" styleClass="stat-value"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- MAIN CONTENT -->
+    <center>
+        <GridPane hgap="15" vgap="15">
+            <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
+
+            <!-- LEFT COLUMN -->
+            
+            <!-- Books Panel -->
+            <VBox spacing="10" styleClass="card" GridPane.columnIndex="0" GridPane.rowIndex="0" prefWidth="380" prefHeight="320">
+                <Label text="Books Management" styleClass="card-title"/>
+                
+                <HBox spacing="5">
+                    <TextField fx:id="txtSearchBook" promptText="Search books..." HBox.hgrow="ALWAYS"/>
+                    <Button text="Search" onAction="#handleSearchBook" styleClass="primary-btn"/>
+                </HBox>
+                
+                <TableView fx:id="tblBooks" prefHeight="180" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colBookTitle" text="Title" prefWidth="180"/>
+                        <TableColumn fx:id="colBookAuthor" text="Author" prefWidth="120"/>
+                        <TableColumn fx:id="colBookShelf" text="Shelf" prefWidth="60"/>
+                    </columns>
+                </TableView>
+                
+                <HBox spacing="5">
+                    <Button text="Add Book" onAction="#handleAddBook" styleClass="primary-btn"/>
+                    <Button text="View Details" onAction="#handleViewBookDetails" styleClass="secondary-btn"/>
+                </HBox>
+            </VBox>
+
+            <!-- Tasks Panel -->
+            <VBox spacing="10" styleClass="card" GridPane.columnIndex="0" GridPane.rowIndex="1" prefWidth="380" prefHeight="300">
+                <Label text="Task Management" styleClass="card-title"/>
+                
+                <GridPane hgap="5" vgap="5">
+                    <Label text="Book Title:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <TextField fx:id="txtTaskBookTitle" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS"/>
+                    
+                    <Button text="Get Book" onAction="#handleGetBook" styleClass="primary-btn" 
+                            GridPane.columnIndex="0" GridPane.rowIndex="1" maxWidth="Infinity"/>
+                    <Button text="Return Book" onAction="#handleReturnBook" styleClass="primary-btn" 
+                            GridPane.columnIndex="1" GridPane.rowIndex="1" maxWidth="Infinity"/>
+                </GridPane>
+                
+                <Label text="Active Tasks" styleClass="subsection-title"/>
+                <TableView fx:id="tblTasks" prefHeight="150" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colTaskName" text="Task" prefWidth="150"/>
+                        <TableColumn fx:id="colTaskStatus" text="Status" prefWidth="80"/>
+                        <TableColumn fx:id="colTaskPriority" text="Priority" prefWidth="80"/>
+                        <TableColumn fx:id="colTaskAssigned" text="Robot" prefWidth="60"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <!-- MIDDLE COLUMN -->
+            
+            <!-- Equipment Panel -->
+            <VBox spacing="10" styleClass="card" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="380" prefHeight="320">
+                <Label text="Equipment Status" styleClass="card-title"/>
+                
+                <Label text="Robots" styleClass="subsection-title"/>
+                <TableView fx:id="tblRobots" prefHeight="140">
+                    <columns>
+                        <TableColumn fx:id="colRobotId" text="ID" prefWidth="80"/>
+                        <TableColumn fx:id="colRobotBattery" text="Battery" prefWidth="80"/>
+                        <TableColumn fx:id="colRobotStatus" text="Status" prefWidth="90"/>
+                        <TableColumn fx:id="colRobotLoad" text="Load" prefWidth="110"/>
+                    </columns>
+                </TableView>
+                
+                <HBox spacing="5">
+                    <Button text="Add Robot" onAction="#handleAddRobot" styleClass="secondary-btn"/>
+                    <Button text="Details" onAction="#handleRobotDetails" styleClass="secondary-btn"/>
+                </HBox>
+            </VBox>
+
+            <!-- Charging Stations Panel -->
+            <VBox spacing="10" styleClass="card" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="380" prefHeight="300">
+                <Label text="Charging Stations" styleClass="card-title"/>
+                
+                <ListView fx:id="lstChargingStations" prefHeight="200" VBox.vgrow="ALWAYS"/>
+                
+                <HBox spacing="5">
+                    <Button text="Add Station" onAction="#handleAddStation" styleClass="secondary-btn"/>
+                    <Button text="View Details" onAction="#handleStationDetails" styleClass="secondary-btn"/>
+                </HBox>
+            </VBox>
+
+            <!-- RIGHT COLUMN -->
+            
+            <!-- Shelves Panel -->
+            <VBox spacing="10" styleClass="card" GridPane.columnIndex="2" GridPane.rowIndex="0" prefWidth="380" prefHeight="320">
+                <Label text="Library Shelves" styleClass="card-title"/>
+                
+                <TableView fx:id="tblShelves" prefHeight="200" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colShelfName" text="Shelf" prefWidth="80"/>
+                        <TableColumn fx:id="colShelfBooks" text="Books" prefWidth="60"/>
+                        <TableColumn fx:id="colShelfCapacity" text="Capacity" prefWidth="80"/>
+                        <TableColumn fx:id="colShelfStatus" text="Status" prefWidth="140"/>
+                    </columns>
+                </TableView>
+                
+                <HBox spacing="5">
+                    <Button text="Add Shelf" onAction="#handleAddShelf" styleClass="secondary-btn"/>
+                    <Button text="View Books" onAction="#handleViewShelfBooks" styleClass="secondary-btn"/>
+                </HBox>
+            </VBox>
+
+            <!-- Logs Panel -->
+            <VBox spacing="10" styleClass="card" GridPane.columnIndex="2" GridPane.rowIndex="1" prefWidth="380" prefHeight="300">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="System Logs" styleClass="card-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <ComboBox fx:id="cmbLogScope" promptText="Filter" prefWidth="100"/>
+                    <Button text="Refresh" onAction="#handleRefreshLogs" styleClass="icon-btn"/>
+                </HBox>
+                
+                <TableView fx:id="tblLogs" prefHeight="220" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colLogTime" text="Time" prefWidth="80"/>
+                        <TableColumn fx:id="colLogMessage" text="Message" prefWidth="280"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <!-- Settings Panel (Bottom spanning all columns) -->
+            <HBox spacing="15" styleClass="settings-panel" GridPane.columnIndex="0" GridPane.rowIndex="2" 
+                  GridPane.columnSpan="3" alignment="CENTER_LEFT">
+                <padding><Insets top="10" right="15" bottom="10" left="15"/></padding>
+                
+                <Label text="Settings:" styleClass="settings-label"/>
+                
+                <Label text="Battery Threshold:"/>
+                <Spinner fx:id="spnBatteryThreshold" prefWidth="80" editable="true"/>
+                <Label text="percent"/>
+                
+                <Separator orientation="VERTICAL"/>
+                
+                <Label text="Log Refresh Interval:"/>
+                <Spinner fx:id="spnLogRefresh" prefWidth="80" editable="true"/>
+                <Label text="seconds"/>
+                
+                <Region HBox.hgrow="ALWAYS"/>
+                
+                <Button text="Save Config" onAction="#handleSaveConfig" styleClass="primary-btn"/>
+                <Button text="Save State" onAction="#handleSaveState" styleClass="primary-btn"/>
+            </HBox>
+        </GridPane>
+    </center>
+
+    <!-- BOTTOM STATUS BAR -->
+    <bottom>
+        <HBox spacing="10" styleClass="status-bar" alignment="CENTER_LEFT">
+            <padding><Insets top="8" right="15" bottom="8" left="15"/></padding>
+            <Label text="Status:" styleClass="status-label"/>
+            <Label fx:id="lblStatus" text="System ready" styleClass="status-message" HBox.hgrow="ALWAYS"/>
+            <Label fx:id="lblSystemTime" text="System Time: 00:00:00" styleClass="status-time"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>
+

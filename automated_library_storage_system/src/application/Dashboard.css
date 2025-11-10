@@ -1,104 +1,225 @@
 .root {
-    -fx-font-family: "Arial";
-    -fx-background-color: #f2f4f7;
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-background-color: #f5f7fa;
 }
 
 /* Top bar */
 .top-bar {
-    -fx-background-color: #0D47A1;
-    -fx-padding: 10 16;
+    -fx-background-color: linear-gradient(to right, #0D47A1, #1565C0);
+    -fx-padding: 12 20;
     -fx-alignment: center-left;
 }
+
+.nav-title {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+}
+
 .nav-item {
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-font-size: 14px;
+    -fx-font-size: 13px;
+}
+
+/* Stats bar */
+.stats-bar {
+    -fx-background-color: white;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 0 1 0;
+}
+
+.stat-label {
+    -fx-text-fill: #666;
+    -fx-font-size: 11px;
+}
+
+.stat-value {
+    -fx-text-fill: #0D47A1;
+    -fx-font-weight: bold;
+    -fx-font-size: 20px;
 }
 
 /* Cards */
 .card {
     -fx-background-color: white;
-    -fx-padding: 20;
-    -fx-background-radius: 12;
-    -fx-border-radius: 12;
-    -fx-border-color: #B0BEC5;
+    -fx-padding: 15;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #e0e0e0;
     -fx-border-width: 1;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 6, 0, 0, 2);
-    -fx-pref-height: 320;   
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 2);
 }
 
-
 .card-title {
-    -fx-font-size: 16px;
+    -fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-text-fill: #0D47A1;
 }
 
-/* Primary button */
+.subsection-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #444;
+}
+
+/* Buttons */
 .primary-btn {
     -fx-background-color: #0D47A1;
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-background-radius: 8;
-    -fx-padding: 8 12;
+    -fx-background-radius: 6;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
 }
+
 .primary-btn:hover {
     -fx-background-color: #1565C0;
 }
 
-
-.book-status {
-    -fx-text-fill: #107B2B;
-    -fx-font-weight: bold;
-}
-
-/* Storage slot buttons */
-.slot {
-    -fx-pref-width: 52;
-    -fx-pref-height: 52;
-    -fx-background-color: #CFD8DC;
-    -fx-background-radius: 8;
-    -fx-border-color: #B0BEC5;
-    -fx-border-radius: 8;
-	
-}
-
-/* Right panel (charging card) styling */
-.right-panel {
-    -fx-background-color: transparent;
-	
-	
-}
-
-
-.charging-slot {
-    -fx-pref-width: 140;
-    -fx-pref-height: 40;
-    -fx-background-color: #107B2B; 
+.secondary-btn {
+    -fx-background-color: #607D8B;
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-background-radius: 6;
+    -fx-padding: 8 16;
     -fx-cursor: hand;
-    -fx-padding: 5 0 5 5; 
 }
 
-.charging-slot:hover {
-    -fx-background-color: #0c6b27;
+.secondary-btn:hover {
+    -fx-background-color: #78909C;
 }
 
-
-.charging-slot:hover {
-    -fx-background-color: #0c6b27;
+.icon-btn {
+    -fx-background-color: #E0E0E0;
+    -fx-text-fill: #333;
+    -fx-background-radius: 6;
+    -fx-padding: 8 12;
+    -fx-cursor: hand;
 }
 
-
-.active-slot {
-    -fx-background-color: #0D47A1; 
-    -fx-text-fill: white;
+.icon-btn:hover {
+    -fx-background-color: #BDBDBD;
 }
 
-
+/* Tables */
 .table-view {
     -fx-background-radius: 8;
     -fx-border-radius: 8;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1;
+}
+
+.table-view .column-header {
+    -fx-background-color: #f5f7fa;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+
+.table-row-cell {
+    -fx-font-size: 12px;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #E3F2FD;
+}
+
+/* Text fields */
+.text-field {
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1;
+    -fx-padding: 8;
+}
+
+.text-field:focused {
+    -fx-border-color: #0D47A1;
+}
+
+/* ComboBox */
+.combo-box {
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+}
+
+/* ListView */
+.list-view {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1;
+}
+
+.list-cell {
+    -fx-font-size: 12px;
+    -fx-padding: 8;
+}
+
+.list-cell:selected {
+    -fx-background-color: #E3F2FD;
+}
+
+/* Settings Panel */
+.settings-panel {
+    -fx-background-color: white;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1 0 0 0;
+}
+
+.settings-label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #0D47A1;
+    -fx-font-size: 13px;
+}
+
+/* Status bar */
+.status-bar {
+    -fx-background-color: #263238;
+    -fx-padding: 8 15;
+}
+
+.status-label {
+    -fx-text-fill: #B0BEC5;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.status-message {
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+}
+
+.status-time {
+    -fx-text-fill: #78909C;
+    -fx-font-size: 11px;
+}
+
+/* Spinner */
+.spinner {
+    -fx-background-radius: 6;
+}
+
+.spinner .text-field {
+    -fx-background-radius: 6 0 0 6;
+}
+
+/* Scrollbar */
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #B0BEC5;
+    -fx-background-radius: 10;
+}
+
+.scroll-bar:horizontal .thumb {
+    -fx-background-color: #B0BEC5;
+    -fx-background-radius: 10;
+}
+
+/* Dialog styling */
+.dialog-pane {
+    -fx-background-color: white;
+}
+
+.dialog-pane .button {
+    -fx-background-radius: 6;
 }

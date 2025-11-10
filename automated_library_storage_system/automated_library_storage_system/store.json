@@ -1,0 +1,183 @@
+{
+  "books": [
+    {
+      "id": "BOOK-2",
+      "title": "1984",
+      "author": "George Orwell",
+      "weightKg": 1.3047981,
+      "shelfId": "SHELF-2"
+    },
+    {
+      "id": "BOOK-3",
+      "title": "To Kill a Mockingbird",
+      "author": "Harper Lee",
+      "weightKg": 0.79866385,
+      "shelfId": "SHELF-3"
+    },
+    {
+      "id": "BOOK-1",
+      "title": "The Great Gatsby",
+      "author": "F. Scott Fitzgerald",
+      "weightKg": 0.5623453,
+      "shelfId": "SHELF-1"
+    },
+    {
+      "id": "BOOK-10",
+      "title": "Fahrenheit 451",
+      "author": "Ray Bradbury",
+      "weightKg": 0.66297334,
+      "shelfId": "SHELF-5"
+    },
+    {
+      "id": "BOOK-8",
+      "title": "Animal Farm",
+      "author": "George Orwell",
+      "weightKg": 1.0410838,
+      "shelfId": "SHELF-3"
+    },
+    {
+      "id": "BOOK-9",
+      "title": "The Hobbit",
+      "author": "J.R.R. Tolkien",
+      "weightKg": 1.3272519,
+      "shelfId": "SHELF-4"
+    },
+    {
+      "id": "BOOK-6",
+      "title": "Harry Potter",
+      "author": "J.K. Rowling",
+      "weightKg": 0.87483954,
+      "shelfId": "SHELF-1"
+    },
+    {
+      "id": "BOOK-7",
+      "title": "The Lord of the Rings",
+      "author": "J.R.R. Tolkien",
+      "weightKg": 1.0001677,
+      "shelfId": "SHELF-2"
+    },
+    {
+      "id": "BOOK-4",
+      "title": "Pride and Prejudice",
+      "author": "Jane Austen",
+      "weightKg": 1.3850604,
+      "shelfId": "SHELF-4"
+    },
+    {
+      "id": "BOOK-5",
+      "title": "The Catcher in the Rye",
+      "author": "J.D. Salinger",
+      "weightKg": 0.5846951,
+      "shelfId": "SHELF-5"
+    }
+  ],
+  "shelves": [
+    {
+      "id": "SHELF-1",
+      "name": "Shelf A",
+      "maxCapacity": 10,
+      "bookIds": [
+        "BOOK-1",
+        "BOOK-6"
+      ]
+    },
+    {
+      "id": "SHELF-2",
+      "name": "Shelf B",
+      "maxCapacity": 10,
+      "bookIds": [
+        "BOOK-2",
+        "BOOK-7"
+      ]
+    },
+    {
+      "id": "SHELF-3",
+      "name": "Shelf C",
+      "maxCapacity": 10,
+      "bookIds": [
+        "BOOK-3",
+        "BOOK-8"
+      ]
+    },
+    {
+      "id": "SHELF-4",
+      "name": "Shelf D",
+      "maxCapacity": 10,
+      "bookIds": [
+        "BOOK-4",
+        "BOOK-9"
+      ]
+    },
+    {
+      "id": "SHELF-5",
+      "name": "Shelf E",
+      "maxCapacity": 10,
+      "bookIds": [
+        "BOOK-5",
+        "BOOK-10"
+      ]
+    }
+  ],
+  "robots": [
+    {
+      "id": "ROBOT-4",
+      "maxWeightKg": 5.0,
+      "maxBookCount": 10,
+      "currentChargePercent": 100.0,
+      "executionDuration": 5.0
+    },
+    {
+      "id": "ROBOT-3",
+      "maxWeightKg": 5.0,
+      "maxBookCount": 10,
+      "currentChargePercent": 100.0,
+      "executionDuration": 5.0
+    },
+    {
+      "id": "ROBOT-5",
+      "maxWeightKg": 5.0,
+      "maxBookCount": 10,
+      "currentChargePercent": 100.0,
+      "executionDuration": 5.0
+    },
+    {
+      "id": "ROBOT-2",
+      "maxWeightKg": 5.0,
+      "maxBookCount": 10,
+      "currentChargePercent": 100.0,
+      "executionDuration": 5.0
+    },
+    {
+      "id": "ROBOT-1",
+      "maxWeightKg": 5.0,
+      "maxBookCount": 10,
+      "currentChargePercent": 100.0,
+      "executionDuration": 5.0
+    }
+  ],
+  "stations": [
+    {
+      "id": "CHG-1",
+      "name": "Station 1",
+      "numSlots": 3
+    },
+    {
+      "id": "CHG-2",
+      "name": "Station 2",
+      "numSlots": 3
+    },
+    {
+      "id": "CHG-3",
+      "name": "Station 3",
+      "numSlots": 3
+    }
+  ],
+  "tasks": [],
+  "config": {
+    "batteryThreshold": 15.0,
+    "logRefreshInterval": 2,
+    "numChargingStations": 3,
+    "numSlotsPerStation": 3,
+    "maxShelfCapacity": 10
+  }
+}
