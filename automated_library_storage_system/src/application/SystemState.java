@@ -67,11 +67,16 @@ public class SystemState {
         state.config.setNumChargingStations(2);
         state.config.setNumSlotsPerStation(1);
         
-        // Create default shelves
+        // Create default shelves with categories and distances
+        String[] categories = {"Fiction", "Science", "History", "Technology", "Literature"};
+        int[] distances = {10, 20, 30, 40, 50}; // Varying distances
+        
         for (int i = 1; i <= 5; i++) {
             ShelfData shelf = new ShelfData();
             shelf.setId("SHELF-" + i);
             shelf.setName("Shelf " + (char)('A' + i - 1));
+            shelf.setCategory(categories[i - 1]);
+            shelf.setDistance(distances[i - 1]);
             shelf.setMaxCapacity(10);
             shelf.setBookIds(new ArrayList<>());
             state.shelves.add(shelf);
@@ -95,18 +100,18 @@ public class SystemState {
             state.robots.add(robot);
         }
         
-        // Create default books
+        // Create default books with categories matching shelves
         String[][] defaultBooks = {
-            {"The Great Gatsby", "F. Scott Fitzgerald"},
-            {"1984", "George Orwell"},
-            {"To Kill a Mockingbird", "Harper Lee"},
-            {"Pride and Prejudice", "Jane Austen"},
-            {"The Catcher in the Rye", "J.D. Salinger"},
-            {"Harry Potter", "J.K. Rowling"},
-            {"The Lord of the Rings", "J.R.R. Tolkien"},
-            {"Animal Farm", "George Orwell"},
-            {"The Hobbit", "J.R.R. Tolkien"},
-            {"Fahrenheit 451", "Ray Bradbury"}
+            {"The Great Gatsby", "F. Scott Fitzgerald", "Fiction"},
+            {"1984", "George Orwell", "Science"},
+            {"To Kill a Mockingbird", "Harper Lee", "Fiction"},
+            {"Pride and Prejudice", "Jane Austen", "Literature"},
+            {"The Catcher in the Rye", "J.D. Salinger", "Fiction"},
+            {"Harry Potter", "J.K. Rowling", "Fiction"},
+            {"The Lord of the Rings", "J.R.R. Tolkien", "Literature"},
+            {"Animal Farm", "George Orwell", "History"},
+            {"The Hobbit", "J.R.R. Tolkien", "Literature"},
+            {"Fahrenheit 451", "Ray Bradbury", "Science"}
         };
         
         for (int i = 0; i < defaultBooks.length; i++) {
@@ -114,13 +119,21 @@ public class SystemState {
             book.setId("BOOK-" + (i + 1));
             book.setTitle(defaultBooks[i][0]);
             book.setAuthor(defaultBooks[i][1]);
-            book.setWeightKg(0.5f + (float)(Math.random() * 1.0));
-            book.setShelfId("SHELF-" + ((i % 5) + 1));
-            state.books.add(book);
+            book.setCategory(defaultBooks[i][2]);
             
-            // Add to shelf
-            ShelfData shelf = state.shelves.get(i % 5);
-            shelf.getBookIds().add(book.getId());
+            // Find matching category shelf
+            String matchingShelfId = null;
+            for (ShelfData shelf : state.shelves) {
+                if (shelf.getCategory().equals(book.getCategory()) && 
+                    shelf.getBookIds().size() < shelf.getMaxCapacity()) {
+                    matchingShelfId = shelf.getId();
+                    shelf.getBookIds().add(book.getId());
+                    break;
+                }
+            }
+            
+            book.setShelfId(matchingShelfId);
+            state.books.add(book);
         }
         
         Logger.logSystem("INFO", "Created default system state with " + 
@@ -153,7 +166,7 @@ public class SystemState {
         private String id;
         private String title;
         private String author;
-        private float weightKg;
+        private String category;
         private String shelfId;
         private String status = "AVAILABLE";
         
@@ -166,8 +179,8 @@ public class SystemState {
         public String getAuthor() { return author; }
         public void setAuthor(String author) { this.author = author; }
         
-        public float getWeightKg() { return weightKg; }
-        public void setWeightKg(float weightKg) { this.weightKg = weightKg; }
+        public String getCategory() { return category; }
+        public void setCategory(String category) { this.category = category; }
         
         public String getShelfId() { return shelfId; }
         public void setShelfId(String shelfId) { this.shelfId = shelfId; }
@@ -179,6 +192,8 @@ public class SystemState {
     public static class ShelfData {
         private String id;
         private String name;
+        private String category;
+        private int distance;
         private int maxCapacity;
         private List<String> bookIds;
         
@@ -187,6 +202,12 @@ public class SystemState {
         
         public String getName() { return name; }
         public void setName(String name) { this.name = name; }
+        
+        public String getCategory() { return category; }
+        public void setCategory(String category) { this.category = category; }
+        
+        public int getDistance() { return distance; }
+        public void setDistance(int distance) { this.distance = distance; }
         
         public int getMaxCapacity() { return maxCapacity; }
         public void setMaxCapacity(int maxCapacity) { this.maxCapacity = maxCapacity; }

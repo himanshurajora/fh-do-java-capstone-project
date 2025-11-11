@@ -17,9 +17,9 @@ public class Task {
     private LocalDateTime dueDate;
     private LocalDateTime completedAt;
     private List<String> logEntries;
-
-
     private Book relatedBook;
+    private int taskDurationSeconds = 15; // Default, will be overridden by shelf distance
+    private float batteryRequired = 7.5f; // Default, will be overridden by shelf distance
     
     public Task(String taskId, String taskName, String description, TaskPriority priority, String assignedTo) {
         this.taskId = taskId;
@@ -40,6 +40,22 @@ public class Task {
     
     public void setRelatedBook(Book book) {
         this.relatedBook = book;
+    }
+    
+    public int getTaskDurationSeconds() {
+        return taskDurationSeconds;
+    }
+    
+    public void setTaskDurationSeconds(int duration) {
+        this.taskDurationSeconds = duration;
+    }
+    
+    public float getBatteryRequired() {
+        return batteryRequired;
+    }
+    
+    public void setBatteryRequired(float battery) {
+        this.batteryRequired = battery;
     }
 
     public void startTask() {

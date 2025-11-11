@@ -10,12 +10,12 @@ public class Book {
     private String id;
     private String title;
     private String author;
-    private float weightKg;
+    private String category;
     private String shelfId;
     private BookStatus status;
     private String assignedRobotId;
 
-    public Book(String id, String title, String author, float weightKg) {
+    public Book(String id, String title, String author, String category) {
         if (id == null || id.trim().isEmpty()) {
             throw new IllegalArgumentException("id is null/empty");
         }
@@ -25,12 +25,15 @@ public class Book {
         if (author == null || author.trim().isEmpty()) {
             throw new IllegalArgumentException("author is null/empty");
         }
+        if (category == null || category.trim().isEmpty()) {
+            throw new IllegalArgumentException("category is null/empty");
+        }
         this.id = id;
         this.title = title;
         this.author = author;
-        this.weightKg = weightKg;
+        this.category = category;
         this.status = BookStatus.AVAILABLE;
-        application.Logger.logStorage(id, "INFO", "Book created: " + title + " by " + author);
+        application.Logger.logStorage(id, "INFO", "Book created: " + title + " by " + author + " [" + category + "]");
     }
 
     public String getId() { return id; }
@@ -42,8 +45,8 @@ public class Book {
     public String getAuthor() { return author; }
     public void setAuthor(String author) { this.author = author; }
     
-    public float getWeightKg() { return weightKg; }
-    public void setWeightKg(float weightKg) { this.weightKg = weightKg; }
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
     
     public String getShelfId() { return shelfId; }
     public void setShelfId(String shelfId) { this.shelfId = shelfId; }
@@ -63,6 +66,6 @@ public class Book {
 
     @Override
     public String toString() {
-        return title + " by " + author + " [" + status + "]";
+        return title + " by " + author + " [" + category + ", " + status + "]";
     }
 }

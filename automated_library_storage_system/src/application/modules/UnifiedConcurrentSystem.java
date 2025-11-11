@@ -329,6 +329,10 @@ public class UnifiedConcurrentSystem {
         
         synchronized (this) {
             if (!taskQueue.isEmpty() && !availableRobots.isEmpty()) {
+                // Peek at the first task to check battery requirements
+                Task candidateTask = taskQueue.get(0);
+                float requiredBattery = candidateTask.getBatteryRequired();
+                
                 for (Robot robot : new ArrayList<>(availableRobots)) {
                     // Check if robot has enough battery for assignment (must be >= 15%)
                     if (robot.getCurrentChargePercent() < 15.0f) {
@@ -342,13 +346,21 @@ public class UnifiedConcurrentSystem {
                         continue; // Try next robot
                     }
                     
-                    if (robot.getCurrentChargePercent() >= 20) {
-                        taskToExecute = taskQueue.remove(0);
-                        robotToUse = robot;
-                        availableRobots.remove(robot);
-                        busyRobots.add(robot);
-                        break;
+                    // Check if robot has enough battery for THIS specific task
+                    if (robot.getCurrentChargePercent() < requiredBattery) {
+                        application.Logger.logResources("SYSTEM", "WARN", 
+                            robot.getId() + " cannot execute task - needs " + 
+                            String.format("%.1f", requiredBattery) + "% but has " + 
+                            String.format("%.1f", robot.getCurrentChargePercent()) + "%");
+                        continue; // Try next robot
                     }
+                    
+                    // Robot has enough battery for the task
+                    taskToExecute = taskQueue.remove(0);
+                    robotToUse = robot;
+                    availableRobots.remove(robot);
+                    busyRobots.add(robot);
+                    break;
                 }
             }
         }
@@ -413,11 +425,17 @@ public class UnifiedConcurrentSystem {
                     robot.getId() + " picked up book: " + book.getTitle());
             }
             
-            // Task execution takes 15 seconds
-            Thread.sleep(15000);
+            // Task execution based on shelf distance
+            int taskDuration = task.getTaskDurationSeconds();
+            float batteryDrain = task.getBatteryRequired();
             
-            // Battery drain: 5% per task
-            float batteryDrain = 5.0f;
+            application.Logger.logResources("SYSTEM", "INFO", 
+                "Task will take " + taskDuration + " seconds, drain " + 
+                String.format("%.1f", batteryDrain) + "% battery");
+            
+            Thread.sleep(taskDuration * 1000);
+            
+            // Battery drain based on distance
             float newBattery = Math.max(0, robot.getCurrentChargePercent() - batteryDrain);
             robot.setCurrentChargePercent(newBattery);
             

@@ -56,14 +56,25 @@ public class LibrarySystemManager {
         
         // Initialize shelves
         for (SystemState.ShelfData shelfData : systemState.getShelves()) {
-            Shelf shelf = new Shelf(shelfData.getId(), shelfData.getName(), shelfData.getMaxCapacity());
+            Shelf shelf = new Shelf(
+                shelfData.getId(), 
+                shelfData.getName(), 
+                shelfData.getCategory(),
+                shelfData.getDistance(),
+                shelfData.getMaxCapacity()
+            );
             library.addShelf(shelf);
             shelfMap.put(shelf.getId(), shelf);
         }
         
         // Initialize books
         for (SystemState.BookData bookData : systemState.getBooks()) {
-            Book book = new Book(bookData.getId(), bookData.getTitle(), bookData.getAuthor(), bookData.getWeightKg());
+            Book book = new Book(
+                bookData.getId(), 
+                bookData.getTitle(), 
+                bookData.getAuthor(), 
+                bookData.getCategory()
+            );
             book.setShelfId(bookData.getShelfId());
             
             // Set book status from saved state
@@ -76,11 +87,16 @@ public class LibrarySystemManager {
             library.addBook(book);
             bookMap.put(book.getId(), book);
             
-            // Add book to its shelf if available
+            // Add book to its shelf if available and category matches
             if (book.isAvailable() && bookData.getShelfId() != null) {
                 Shelf shelf = shelfMap.get(bookData.getShelfId());
-                if (shelf != null && !shelf.isFull()) {
-                    shelf.addBook(book);
+                if (shelf != null && !shelf.isFull() && 
+                    shelf.getCategory().equalsIgnoreCase(book.getCategory())) {
+                    try {
+                        shelf.addBook(book);
+                    } catch (Exception e) {
+                        Logger.logSystem("WARN", "Could not add book to shelf: " + e.getMessage());
+                    }
                 }
             }
         }
@@ -158,10 +174,25 @@ public class LibrarySystemManager {
                 bookData.setId(book.getId());
                 bookData.setTitle(book.getTitle());
                 bookData.setAuthor(book.getAuthor());
-                bookData.setWeightKg(book.getWeightKg());
+                bookData.setCategory(book.getCategory());
                 bookData.setShelfId(book.getShelfId());
                 bookData.setStatus(book.getStatus().toString());
                 systemState.getBooks().add(bookData);
+            }
+            
+            systemState.getShelves().clear();
+            for (Shelf shelf : shelfMap.values()) {
+                SystemState.ShelfData shelfData = new SystemState.ShelfData();
+                shelfData.setId(shelf.getId());
+                shelfData.setName(shelf.getName());
+                shelfData.setCategory(shelf.getCategory());
+                shelfData.setDistance(shelf.getDistance());
+                shelfData.setMaxCapacity(shelf.getMaxCapacity());
+                shelfData.setBookIds(new ArrayList<>());
+                for (Book book : shelf.getBooks()) {
+                    shelfData.getBookIds().add(book.getId());
+                }
+                systemState.getShelves().add(shelfData);
             }
             
             systemState.getRobots().clear();
@@ -201,31 +232,43 @@ public class LibrarySystemManager {
                 return;
             }
             
+            // Get shelf to determine distance
+            Shelf shelf = shelfMap.get(book.getShelfId());
+            if (shelf == null) {
+                setStatusMessage("Error: Book shelf not found");
+                return;
+            }
+            
+            int taskDuration = shelf.getTaskDurationSeconds();
+            float batteryRequired = shelf.getTaskBatteryDrain();
+            
             String taskId = "GET-" + System.currentTimeMillis();
             Task task = new Task(
                 taskId,
                 "Get Book",
-                "Retrieve book: " + book.getTitle() + " from " + book.getShelfId(),
+                "Retrieve book: " + book.getTitle() + " from " + shelf.getName() + 
+                " (distance: " + shelf.getDistance() + ")",
                 TaskPriority.MEDIUM,
                 "AUTO"
             );
             
-            // Link the book to the task
+            // Set distance-based parameters
             task.setRelatedBook(book);
+            task.setTaskDurationSeconds(taskDuration);
+            task.setBatteryRequired(batteryRequired);
             
             // Remove book from shelf (it will be in transit)
-            Shelf shelf = shelfMap.get(book.getShelfId());
-            if (shelf != null) {
-                try {
-                    shelf.removeBook(book);
-                } catch (Exception e) {
-                    Logger.logSystem("WARN", "Could not remove book from shelf: " + e.getMessage());
-                }
+            try {
+                shelf.removeBook(book);
+            } catch (Exception e) {
+                Logger.logSystem("WARN", "Could not remove book from shelf: " + e.getMessage());
             }
             
             concurrentSystem.addTask(task);
-            setStatusMessage("Task created: Get " + book.getTitle() + " (15 seconds)");
-            Logger.logTasks("INFO", "Get book task created: " + book.getTitle());
+            setStatusMessage("Task created: Get " + book.getTitle() + 
+                " (" + taskDuration + "s, " + String.format("%.1f", batteryRequired) + "% battery)");
+            Logger.logTasks("INFO", "Get book task created: " + book.getTitle() + 
+                " from " + shelf.getName() + " [distance: " + shelf.getDistance() + "]");
             
         } catch (Exception e) {
             setStatusMessage("Error creating task: " + e.getMessage());
@@ -268,17 +311,23 @@ public class LibrarySystemManager {
                 return;
             }
             
+            int taskDuration = targetShelf.getTaskDurationSeconds();
+            float batteryRequired = targetShelf.getTaskBatteryDrain();
+            
             String taskId = "RETURN-" + System.currentTimeMillis();
             Task task = new Task(
                 taskId,
                 "Return Book",
-                "Return book: " + book.getTitle() + " to " + targetShelf.getName(),
+                "Return book: " + book.getTitle() + " to " + targetShelf.getName() +
+                " (distance: " + targetShelf.getDistance() + ")",
                 TaskPriority.LOW,
                 "AUTO"
             );
             
-            // Link the book to the task
+            // Set distance-based parameters
             task.setRelatedBook(book);
+            task.setTaskDurationSeconds(taskDuration);
+            task.setBatteryRequired(batteryRequired);
             
             // Update book status to IN_TRANSIT and assign shelf
             book.setStatus(Book.BookStatus.IN_TRANSIT);
@@ -286,7 +335,7 @@ public class LibrarySystemManager {
             
             concurrentSystem.addTask(task);
             
-            // Schedule adding book back to shelf after task completes (15 seconds + buffer)
+            // Schedule adding book back to shelf after task completes
             java.util.Timer timer = new java.util.Timer();
             timer.schedule(new java.util.TimerTask() {
                 @Override
@@ -294,15 +343,21 @@ public class LibrarySystemManager {
                     if (book.getStatus() == Book.BookStatus.AVAILABLE && book.getShelfId() != null) {
                         Shelf shelf = shelfMap.get(book.getShelfId());
                         if (shelf != null && !shelf.getBooks().contains(book) && !shelf.isFull()) {
-                            shelf.addBook(book);
-                            Logger.logStorage(shelf.getId(), "INFO", "Book returned to shelf: " + book.getTitle());
+                            try {
+                                shelf.addBook(book);
+                                Logger.logStorage(shelf.getId(), "INFO", "Book returned to shelf: " + book.getTitle());
+                            } catch (Exception e) {
+                                Logger.logSystem("WARN", "Could not add book back to shelf: " + e.getMessage());
+                            }
                         }
                     }
                 }
-            }, 16000); // 15 seconds task + 1 second buffer
+            }, (taskDuration + 1) * 1000); // Task duration + 1 second buffer
             
-            setStatusMessage("Task created: Return " + book.getTitle() + " (15 seconds)");
-            Logger.logTasks("INFO", "Return book task created: " + book.getTitle());
+            setStatusMessage("Task created: Return " + book.getTitle() + 
+                " (" + taskDuration + "s, " + String.format("%.1f", batteryRequired) + "% battery)");
+            Logger.logTasks("INFO", "Return book task created: " + book.getTitle() + 
+                " to " + targetShelf.getName() + " [distance: " + targetShelf.getDistance() + "]");
             
         } catch (Exception e) {
             setStatusMessage("Error creating task: " + e.getMessage());
@@ -312,26 +367,32 @@ public class LibrarySystemManager {
     }
     
     // Book operations
-    public void addBook(String title, String author, float weight) {
+    public void addBook(String title, String author, String category) {
         try {
             String bookId = "BOOK-" + (bookMap.size() + 1);
-            Book book = new Book(bookId, title, author, weight);
+            Book book = new Book(bookId, title, author, category);
             
-            Shelf shelf = findShelfWithSpace();
-            if (shelf != null) {
-                shelf.addBook(book);
-                book.setShelfId(shelf.getId());
+            // Find shelf with matching category and space
+            Shelf shelf = findShelfWithSpaceForCategory(category);
+            if (shelf == null) {
+                setStatusMessage("Error: No shelf available for category '" + category + "'");
+                Logger.logSystem("ERROR", "No shelf available for category: " + category);
+                throw new IllegalStateException("No shelf available for category '" + category + "'");
             }
+            
+            shelf.addBook(book);
+            book.setShelfId(shelf.getId());
             
             library.addBook(book);
             bookMap.put(book.getId(), book);
             
-            setStatusMessage("Book added: " + title);
-            Logger.logSystem("INFO", "Book added: " + title);
+            setStatusMessage("Book added: " + title + " [" + category + "] to " + shelf.getName());
+            Logger.logSystem("INFO", "Book added: " + title + " [" + category + "] to " + shelf.getId());
             
         } catch (Exception e) {
             setStatusMessage("Error adding book: " + e.getMessage());
             Logger.logSystem("ERROR", "Failed to add book: " + e.getMessage());
+            throw new RuntimeException(e);
         }
     }
     
@@ -385,14 +446,14 @@ public class LibrarySystemManager {
     }
     
     // Shelf operations
-    public void addShelf(String id, String name, int maxCapacity) {
+    public void addShelf(String id, String name, String category, int distance, int maxCapacity) {
         try {
-            Shelf shelf = new Shelf(id, name, maxCapacity);
+            Shelf shelf = new Shelf(id, name, category, distance, maxCapacity);
             library.addShelf(shelf);
             shelfMap.put(shelf.getId(), shelf);
             
-            setStatusMessage("Shelf added: " + name);
-            Logger.logSystem("INFO", "Shelf added: " + name);
+            setStatusMessage("Shelf added: " + name + " [" + category + ", " + distance + "m]");
+            Logger.logSystem("INFO", "Shelf added: " + name + " [" + category + ", distance: " + distance + "]");
             
         } catch (Exception e) {
             setStatusMessage("Error adding shelf: " + e.getMessage());
@@ -413,6 +474,15 @@ public class LibrarySystemManager {
     private Shelf findShelfWithSpace() {
         for (Shelf shelf : shelfMap.values()) {
             if (shelf.hasSpace()) {
+                return shelf;
+            }
+        }
+        return null;
+    }
+    
+    private Shelf findShelfWithSpaceForCategory(String category) {
+        for (Shelf shelf : shelfMap.values()) {
+            if (shelf.hasSpace() && shelf.getCategory().equalsIgnoreCase(category)) {
                 return shelf;
             }
         }

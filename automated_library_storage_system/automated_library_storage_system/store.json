@@ -4,152 +4,152 @@
       "id": "BOOK-2",
       "title": "1984",
       "author": "George Orwell",
-      "weightKg": 1.3047981,
-      "status": "TAKEN"
+      "category": "Science",
+      "shelfId": "SHELF-5",
+      "status": "AVAILABLE"
     },
     {
       "id": "BOOK-3",
       "title": "To Kill a Mockingbird",
       "author": "Harper Lee",
-      "weightKg": 0.79866385,
-      "shelfId": "SHELF-3",
+      "category": "Fiction",
+      "shelfId": "SHELF-1",
       "status": "AVAILABLE"
     },
     {
       "id": "BOOK-1",
       "title": "The Great Gatsby",
       "author": "F. Scott Fitzgerald",
-      "weightKg": 0.5623453,
-      "shelfId": "SHELF-1",
-      "status": "AVAILABLE"
+      "category": "Fiction",
+      "status": "TAKEN"
     },
     {
       "id": "BOOK-10",
       "title": "Fahrenheit 451",
       "author": "Ray Bradbury",
-      "weightKg": 0.66297334,
-      "shelfId": "SHELF-5",
-      "status": "AVAILABLE"
+      "category": "Science",
+      "status": "TAKEN"
     },
     {
       "id": "BOOK-8",
       "title": "Animal Farm",
       "author": "George Orwell",
-      "weightKg": 1.0410838,
-      "status": "TAKEN"
+      "category": "History",
+      "shelfId": "SHELF-3",
+      "status": "AVAILABLE"
     },
     {
       "id": "BOOK-9",
       "title": "The Hobbit",
       "author": "J.R.R. Tolkien",
-      "weightKg": 1.3272519,
+      "category": "Literature",
       "status": "TAKEN"
     },
     {
       "id": "BOOK-6",
       "title": "Harry Potter",
       "author": "J.K. Rowling",
-      "weightKg": 0.87483954,
-      "shelfId": "SHELF-1",
-      "status": "AVAILABLE"
+      "category": "Fiction",
+      "status": "TAKEN"
     },
     {
       "id": "BOOK-7",
       "title": "The Lord of the Rings",
       "author": "J.R.R. Tolkien",
-      "weightKg": 1.0001677,
-      "shelfId": "SHELF-2",
+      "category": "Literature",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
       "id": "BOOK-4",
       "title": "Pride and Prejudice",
       "author": "Jane Austen",
-      "weightKg": 1.3850604,
-      "shelfId": "SHELF-4",
+      "category": "Literature",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
       "id": "BOOK-5",
       "title": "The Catcher in the Rye",
       "author": "J.D. Salinger",
-      "weightKg": 0.5846951,
-      "shelfId": "SHELF-5",
-      "status": "AVAILABLE"
+      "category": "Fiction",
+      "status": "TAKEN"
     }
   ],
   "shelves": [
     {
-      "id": "SHELF-1",
-      "name": "Shelf A",
+      "id": "SHELF-5",
+      "name": "Shelf E",
+      "category": "Literature",
+      "distance": 50,
       "maxCapacity": 10,
       "bookIds": [
-        "BOOK-1",
-        "BOOK-6"
-      ]
-    },
-    {
-      "id": "SHELF-2",
-      "name": "Shelf B",
-      "maxCapacity": 10,
-      "bookIds": [
-        "BOOK-2",
-        "BOOK-7"
+        "BOOK-7",
+        "BOOK-4"
       ]
     },
     {
       "id": "SHELF-3",
       "name": "Shelf C",
+      "category": "History",
+      "distance": 30,
       "maxCapacity": 10,
       "bookIds": [
-        "BOOK-3",
         "BOOK-8"
       ]
     },
     {
       "id": "SHELF-4",
       "name": "Shelf D",
+      "category": "Technology",
+      "distance": 40,
+      "maxCapacity": 10,
+      "bookIds": []
+    },
+    {
+      "id": "SHELF-1",
+      "name": "Shelf A",
+      "category": "Fiction",
+      "distance": 10,
       "maxCapacity": 10,
       "bookIds": [
-        "BOOK-4",
-        "BOOK-9"
+        "BOOK-3"
       ]
     },
     {
-      "id": "SHELF-5",
-      "name": "Shelf E",
+      "id": "SHELF-2",
+      "name": "Shelf B",
+      "category": "Science",
+      "distance": 20,
       "maxCapacity": 10,
-      "bookIds": [
-        "BOOK-5",
-        "BOOK-10"
-      ]
+      "bookIds": []
     }
   ],
   "robots": [
     {
       "id": "ROBOT-4",
-      "currentChargePercent": 100.0,
-      "executionDuration": 5.0
+      "currentChargePercent": 65.0,
+      "executionDuration": 15.0
     },
     {
       "id": "ROBOT-3",
-      "currentChargePercent": 100.0,
-      "executionDuration": 5.0
+      "currentChargePercent": 65.0,
+      "executionDuration": 15.0
     },
     {
       "id": "ROBOT-5",
-      "currentChargePercent": 100.0,
-      "executionDuration": 5.0
+      "currentChargePercent": 95.0,
+      "executionDuration": 15.0
     },
     {
       "id": "ROBOT-2",
-      "currentChargePercent": 100.0,
-      "executionDuration": 5.0
+      "currentChargePercent": 95.0,
+      "executionDuration": 15.0
     },
     {
       "id": "ROBOT-1",
-      "currentChargePercent": 100.0,
-      "executionDuration": 5.0
+      "currentChargePercent": 95.0,
+      "executionDuration": 15.0
     }
   ],
   "stations": [
@@ -168,8 +168,8 @@
   "config": {
     "batteryThreshold": 15.0,
     "logRefreshInterval": 2,
-    "numChargingStations": 3,
-    "numSlotsPerStation": 3,
+    "numChargingStations": 2,
+    "numSlotsPerStation": 1,
     "maxShelfCapacity": 10
   }
 }

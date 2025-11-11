@@ -84,8 +84,8 @@
                 
                 <TableView fx:id="tblBooks" prefHeight="180" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="colBookTitle" text="Title" prefWidth="180"/>
-                        <TableColumn fx:id="colBookAuthor" text="Author" prefWidth="120"/>
+                        <TableColumn fx:id="colBookTitle" text="Title [Category]" prefWidth="200"/>
+                        <TableColumn fx:id="colBookAuthor" text="Author" prefWidth="100"/>
                         <TableColumn fx:id="colBookShelf" text="Shelf" prefWidth="60"/>
                     </columns>
                 </TableView>
@@ -168,10 +168,10 @@
                 
                 <TableView fx:id="tblShelves" prefHeight="200" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="colShelfName" text="Shelf" prefWidth="80"/>
-                        <TableColumn fx:id="colShelfBooks" text="Books" prefWidth="60"/>
-                        <TableColumn fx:id="colShelfCapacity" text="Capacity" prefWidth="80"/>
-                        <TableColumn fx:id="colShelfStatus" text="Status" prefWidth="140"/>
+                        <TableColumn fx:id="colShelfName" text="Shelf [Category]" prefWidth="120"/>
+                        <TableColumn fx:id="colShelfBooks" text="Books" prefWidth="50"/>
+                        <TableColumn fx:id="colShelfCapacity" text="Capacity (D)" prefWidth="100"/>
+                        <TableColumn fx:id="colShelfStatus" text="Status" prefWidth="90"/>
                     </columns>
                 </TableView>
                 

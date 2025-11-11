@@ -310,14 +310,20 @@ public class DashboardController {
         
         TextField txtTitle = new TextField();
         TextField txtAuthor = new TextField();
-        TextField txtWeight = new TextField("0.5");
+        ComboBox<String> cmbCategory = new ComboBox<>();
+        cmbCategory.getItems().addAll("Fiction", "Science", "History", "Technology", "Literature");
+        cmbCategory.setValue("Fiction");
         
         grid.add(new Label("Title:"), 0, 0);
         grid.add(txtTitle, 1, 0);
         grid.add(new Label("Author:"), 0, 1);
         grid.add(txtAuthor, 1, 1);
-        grid.add(new Label("Weight (kg):"), 0, 2);
-        grid.add(txtWeight, 1, 2);
+        grid.add(new Label("Category:"), 0, 2);
+        grid.add(cmbCategory, 1, 2);
+        
+        Label lblNote = new Label("Note: Book will be placed on shelf with matching category");
+        lblNote.setStyle("-fx-font-size: 10px; -fx-text-fill: #666;");
+        grid.add(lblNote, 0, 3, 2, 1);
         
         dialog.getDialogPane().setContent(grid);
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -325,8 +331,7 @@ public class DashboardController {
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                float weight = Float.parseFloat(txtWeight.getText());
-                systemManager.addBook(txtTitle.getText(), txtAuthor.getText(), weight);
+                systemManager.addBook(txtTitle.getText(), txtAuthor.getText(), cmbCategory.getValue());
                 refreshBooks();
                 refreshShelves();
             } catch (Exception e) {
@@ -353,17 +358,29 @@ public class DashboardController {
         
         Book book = systemManager.getBookById(selected.getId());
         if (book != null) {
+            Shelf shelf = book.getShelfId() != null ? systemManager.getShelfById(book.getShelfId()) : null;
+            
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Book Details");
             alert.setHeaderText(book.getTitle());
-            alert.setContentText(
-                "ID: " + book.getId() + "\n" +
-                "Title: " + book.getTitle() + " (click to copy)\n" +
-                "Author: " + book.getAuthor() + "\n" +
-                "Weight: " + String.format("%.2f", book.getWeightKg()) + " kg\n" +
-                "Status: " + book.getStatus() + "\n" +
-                "Shelf: " + (book.getShelfId() != null ? book.getShelfId() : "Not assigned")
-            );
+            
+            StringBuilder details = new StringBuilder();
+            details.append("ID: ").append(book.getId()).append("\n");
+            details.append("Title: ").append(book.getTitle()).append("\n");
+            details.append("Author: ").append(book.getAuthor()).append("\n");
+            details.append("Category: ").append(book.getCategory()).append("\n");
+            details.append("Status: ").append(book.getStatus()).append("\n");
+            
+            if (shelf != null) {
+                details.append("Shelf: ").append(shelf.getName()).append(" (").append(shelf.getId()).append(")\n");
+                details.append("Distance: ").append(shelf.getDistance()).append(" units\n");
+                details.append("Task Time: ").append(shelf.getTaskDurationSeconds()).append(" seconds\n");
+                details.append("Battery Cost: ").append(String.format("%.1f", shelf.getTaskBatteryDrain())).append("%");
+            } else {
+                details.append("Shelf: Not assigned");
+            }
+            
+            alert.setContentText(details.toString());
             alert.showAndWait();
         }
     }
@@ -707,14 +724,26 @@ public class DashboardController {
         
         TextField txtId = new TextField("SHELF-" + (systemManager.getAllShelves().size() + 1));
         TextField txtName = new TextField("Shelf " + (char)('A' + systemManager.getAllShelves().size()));
+        ComboBox<String> cmbCategory = new ComboBox<>();
+        cmbCategory.getItems().addAll("Fiction", "Science", "History", "Technology", "Literature");
+        cmbCategory.setValue("Fiction");
+        Spinner<Integer> spnDistance = new Spinner<>(10, 50, 30, 5);
         TextField txtCapacity = new TextField("10");
         
         grid.add(new Label("ID:"), 0, 0);
         grid.add(txtId, 1, 0);
         grid.add(new Label("Name:"), 0, 1);
         grid.add(txtName, 1, 1);
-        grid.add(new Label("Capacity:"), 0, 2);
-        grid.add(txtCapacity, 1, 2);
+        grid.add(new Label("Category:"), 0, 2);
+        grid.add(cmbCategory, 1, 2);
+        grid.add(new Label("Distance (10-50):"), 0, 3);
+        grid.add(spnDistance, 1, 3);
+        grid.add(new Label("Capacity:"), 0, 4);
+        grid.add(txtCapacity, 1, 4);
+        
+        Label lblNote = new Label("Distance: Time (sec) = Distance, Battery = Distance/2");
+        lblNote.setStyle("-fx-font-size: 10px; -fx-text-fill: #666;");
+        grid.add(lblNote, 0, 5, 2, 1);
         
         dialog.getDialogPane().setContent(grid);
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -725,6 +754,8 @@ public class DashboardController {
                 systemManager.addShelf(
                     txtId.getText(),
                     txtName.getText(),
+                    cmbCategory.getValue(),
+                    spnDistance.getValue(),
                     Integer.parseInt(txtCapacity.getText())
                 );
                 refreshShelves();
@@ -744,15 +775,26 @@ public class DashboardController {
         
         Shelf shelf = systemManager.getShelfById(selected.getId());
         if (shelf != null) {
-            StringBuilder books = new StringBuilder();
-            for (Book book : shelf.getBooks()) {
-                books.append("- ").append(book.getTitle()).append(" by ").append(book.getAuthor()).append("\n");
+            StringBuilder details = new StringBuilder();
+            details.append("Category: ").append(shelf.getCategory()).append("\n");
+            details.append("Distance: ").append(shelf.getDistance()).append(" units\n");
+            details.append("Task Duration: ").append(shelf.getTaskDurationSeconds()).append(" seconds\n");
+            details.append("Battery Cost: ").append(String.format("%.1f", shelf.getTaskBatteryDrain())).append("%\n\n");
+            details.append("Books (").append(shelf.getCurrentCount()).append("/").append(shelf.getMaxCapacity()).append("):\n");
+            
+            if (shelf.getBooks().isEmpty()) {
+                details.append("- No books on this shelf");
+            } else {
+                for (Book book : shelf.getBooks()) {
+                    details.append("- ").append(book.getTitle()).append(" by ").append(book.getAuthor())
+                        .append(" [").append(book.getCategory()).append("]\n");
+                }
             }
             
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Shelf Books");
-            alert.setHeaderText(shelf.getName() + " (" + shelf.getCurrentCount() + "/" + shelf.getMaxCapacity() + ")");
-            alert.setContentText(books.length() > 0 ? books.toString() : "No books on this shelf");
+            alert.setTitle("Shelf Details");
+            alert.setHeaderText(shelf.getName() + " - " + shelf.getCategory());
+            alert.setContentText(details.toString());
             alert.showAndWait();
         }
     }
@@ -858,7 +900,7 @@ public class DashboardController {
         
         public BookDisplay(Book book) {
             this.id = book.getId();
-            this.title = book.getTitle();
+            this.title = book.getTitle() + " [" + book.getCategory() + "]";
             this.author = book.getAuthor();
             
             // Show status in shelf column
@@ -942,9 +984,10 @@ public class DashboardController {
         
         public ShelfDisplay(Shelf shelf) {
             this.id = shelf.getId();
-            this.name = shelf.getName();
+            this.name = shelf.getName() + " [" + shelf.getCategory() + "]";
             this.bookCount = String.valueOf(shelf.getCurrentCount());
-            this.capacity = shelf.getCurrentCount() + "/" + shelf.getMaxCapacity();
+            this.capacity = shelf.getCurrentCount() + "/" + shelf.getMaxCapacity() + 
+                " (D:" + shelf.getDistance() + ")";
             this.status = shelf.isFull() ? "Full" : 
                          shelf.getCurrentCount() == 0 ? "Empty" : "Available";
         }
