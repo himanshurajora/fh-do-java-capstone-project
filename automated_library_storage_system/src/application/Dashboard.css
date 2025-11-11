@@ -199,6 +199,7 @@
 .station-partial {
     -fx-background-color: #fff9c4;
     -fx-text-fill: #f57f17;
+    -fx-font-weight: bold;
 }
 
 .station-partial:hover {
@@ -208,10 +209,31 @@
 .station-full {
     -fx-background-color: #ffebee;
     -fx-text-fill: #c62828;
+    -fx-font-weight: bold;
 }
 
 .station-full:hover {
     -fx-background-color: #ffcdd2;
+}
+
+.slot-occupied {
+    -fx-background-color: #fff9c4;
+    -fx-text-fill: #e65100;
+    -fx-padding: 4 4 4 20;
+}
+
+.slot-occupied:hover {
+    -fx-background-color: #fff59d;
+}
+
+.slot-empty {
+    -fx-background-color: #fafafa;
+    -fx-text-fill: #999;
+    -fx-padding: 4 4 4 20;
+}
+
+.slot-empty:hover {
+    -fx-background-color: #f0f0f0;
 }
 
 /* Text fields */

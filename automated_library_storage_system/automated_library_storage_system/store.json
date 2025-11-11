@@ -128,7 +128,7 @@
   "robots": [
     {
       "id": "ROBOT-4",
-      "currentChargePercent": 87.0,
+      "currentChargePercent": 100.0,
       "executionDuration": 5.0
     },
     {
@@ -156,17 +156,12 @@
     {
       "id": "CHG-1",
       "name": "Station 1",
-      "numSlots": 3
+      "numSlots": 1
     },
     {
       "id": "CHG-2",
       "name": "Station 2",
-      "numSlots": 3
-    },
-    {
-      "id": "CHG-3",
-      "name": "Station 3",
-      "numSlots": 3
+      "numSlots": 1
     }
   ],
   "tasks": [],

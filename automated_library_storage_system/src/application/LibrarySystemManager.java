@@ -27,6 +27,7 @@ public class LibrarySystemManager {
     private final IntegerProperty availableRobots = new SimpleIntegerProperty(0);
     private final IntegerProperty busyRobots = new SimpleIntegerProperty(0);
     private final IntegerProperty chargingRobots = new SimpleIntegerProperty(0);
+    private final IntegerProperty chargingQueueSize = new SimpleIntegerProperty(0);
     private final IntegerProperty tasksInQueue = new SimpleIntegerProperty(0);
     private final IntegerProperty tasksCompleted = new SimpleIntegerProperty(0);
     private final IntegerProperty tasksFailed = new SimpleIntegerProperty(0);
@@ -112,6 +113,9 @@ public class LibrarySystemManager {
             systemState.getRobots().size()
         );
         
+        // Set charging stations in concurrent system
+        concurrentSystem.setChargingStations(new ArrayList<>(stationMap.values()));
+        
         // Add robots to concurrent system
         for (Robot robot : robotMap.values()) {
             concurrentSystem.addRobot(robot);
@@ -139,6 +143,7 @@ public class LibrarySystemManager {
         availableRobots.set(concurrentSystem.getAvailableRobotCount());
         busyRobots.set(concurrentSystem.getBusyRobotCount());
         chargingRobots.set(concurrentSystem.getActiveChargingCount());
+        chargingQueueSize.set(concurrentSystem.getChargingQueueSize());
         tasksInQueue.set(concurrentSystem.getTaskQueueSize());
         tasksCompleted.set(concurrentSystem.getTotalTasksCompleted());
         tasksFailed.set(concurrentSystem.getTotalTasksFailed());
@@ -236,7 +241,19 @@ public class LibrarySystemManager {
                 return;
             }
             
-            Shelf targetShelf = shelfMap.get(targetShelfId);
+            // Check if book is TAKEN (can only return TAKEN books)
+            if (book.getStatus() != Book.BookStatus.TAKEN) {
+                setStatusMessage("Book cannot be returned: " + bookTitle + " [" + book.getStatus() + "]");
+                Logger.logSystem("WARN", "Cannot return book that is not TAKEN: " + bookTitle);
+                return;
+            }
+            
+            // Find target shelf (auto-assign if not specified)
+            Shelf targetShelf = null;
+            if (targetShelfId != null && !targetShelfId.isEmpty()) {
+                targetShelf = shelfMap.get(targetShelfId);
+            }
+            
             if (targetShelf == null) {
                 // Find any shelf with space
                 targetShelf = findShelfWithSpace();
@@ -260,20 +277,37 @@ public class LibrarySystemManager {
                 "AUTO"
             );
             
+            // Link the book to the task
+            task.setRelatedBook(book);
+            
+            // Update book status to IN_TRANSIT and assign shelf
+            book.setStatus(Book.BookStatus.IN_TRANSIT);
+            book.setShelfId(targetShelf.getId());
+            
             concurrentSystem.addTask(task);
             
-            // Update book location
-            book.setShelfId(targetShelf.getId());
-            if (!targetShelf.getBooks().contains(book)) {
-                targetShelf.addBook(book);
-            }
+            // Schedule adding book back to shelf after task completes (15 seconds + buffer)
+            java.util.Timer timer = new java.util.Timer();
+            timer.schedule(new java.util.TimerTask() {
+                @Override
+                public void run() {
+                    if (book.getStatus() == Book.BookStatus.AVAILABLE && book.getShelfId() != null) {
+                        Shelf shelf = shelfMap.get(book.getShelfId());
+                        if (shelf != null && !shelf.getBooks().contains(book) && !shelf.isFull()) {
+                            shelf.addBook(book);
+                            Logger.logStorage(shelf.getId(), "INFO", "Book returned to shelf: " + book.getTitle());
+                        }
+                    }
+                }
+            }, 16000); // 15 seconds task + 1 second buffer
             
-            setStatusMessage("Task created: Return " + book.getTitle());
+            setStatusMessage("Task created: Return " + book.getTitle() + " (15 seconds)");
             Logger.logTasks("INFO", "Return book task created: " + book.getTitle());
             
         } catch (Exception e) {
             setStatusMessage("Error creating task: " + e.getMessage());
             Logger.logSystem("ERROR", "Failed to create return book task: " + e.getMessage());
+            e.printStackTrace();
         }
     }
     
@@ -337,6 +371,9 @@ public class LibrarySystemManager {
             ChargingStation station = new ChargingStation(id, name, numSlots);
             library.addStation(station);
             stationMap.put(station.getId(), station);
+            
+            // Update concurrent system with new stations list
+            concurrentSystem.setChargingStations(new ArrayList<>(stationMap.values()));
             
             setStatusMessage("Charging station added: " + name);
             Logger.logSystem("INFO", "Charging station added: " + name);
@@ -404,6 +441,7 @@ public class LibrarySystemManager {
     public IntegerProperty availableRobotsProperty() { return availableRobots; }
     public IntegerProperty busyRobotsProperty() { return busyRobots; }
     public IntegerProperty chargingRobotsProperty() { return chargingRobots; }
+    public IntegerProperty chargingQueueSizeProperty() { return chargingQueueSize; }
     public IntegerProperty tasksInQueueProperty() { return tasksInQueue; }
     public IntegerProperty tasksCompletedProperty() { return tasksCompleted; }
     public IntegerProperty tasksFailedProperty() { return tasksFailed; }

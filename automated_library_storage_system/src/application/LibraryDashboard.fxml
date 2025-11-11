@@ -77,8 +77,9 @@
                 <Label text="Books Management" styleClass="card-title"/>
                 
                 <HBox spacing="5">
-                    <TextField fx:id="txtSearchBook" promptText="Search books..." HBox.hgrow="ALWAYS"/>
+                    <TextField fx:id="txtSearchBook" promptText="Search books..." HBox.hgrow="ALWAYS" onAction="#handleSearchBook"/>
                     <Button text="Search" onAction="#handleSearchBook" styleClass="primary-btn"/>
+                    <Button text="Clear" onAction="#handleClearSearch" styleClass="secondary-btn"/>
                 </HBox>
                 
                 <TableView fx:id="tblBooks" prefHeight="180" VBox.vgrow="ALWAYS">
@@ -144,13 +145,18 @@
 
             <!-- Charging Stations Panel -->
             <VBox spacing="10" styleClass="card" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="380" prefHeight="300">
-                <Label text="Charging Stations" styleClass="card-title"/>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Charging Stations" styleClass="card-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="Queue:" styleClass="subsection-title"/>
+                    <Label fx:id="lblChargingQueue" text="0" styleClass="stat-value" style="-fx-font-size: 16px; -fx-text-fill: #d32f2f;"/>
+                </HBox>
                 
-                <ListView fx:id="lstChargingStations" prefHeight="200" VBox.vgrow="ALWAYS"/>
+                <ListView fx:id="lstChargingStations" prefHeight="220" VBox.vgrow="ALWAYS"/>
                 
                 <HBox spacing="5">
                     <Button text="Add Station" onAction="#handleAddStation" styleClass="secondary-btn"/>
-                    <Button text="View Details" onAction="#handleStationDetails" styleClass="secondary-btn"/>
+                    <Button text="View Queue" onAction="#handleViewChargingQueue" styleClass="secondary-btn"/>
                 </HBox>
             </VBox>
 

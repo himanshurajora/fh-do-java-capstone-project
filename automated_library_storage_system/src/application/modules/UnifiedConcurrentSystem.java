@@ -16,12 +16,17 @@ public class UnifiedConcurrentSystem {
     private final List<Robot> busyRobots;
     private final ExecutorService chargingExecutor;
     private final ExecutorService taskExecutor;
+    private final ScheduledExecutorService queueProcessor;
     private final List<Future<?>> allFutures;
     private int totalCharged = 0;
     private int totalLeftChargingQueue = 0;
     private int totalTasksCompleted = 0;
     private int totalTasksFailed = 0;
     private final long maxWaitTimeMinutes = 15;
+    
+    // Charging station integration
+    private List<ChargingStation> chargingStations;
+    private int totalSlots;
     
     public UnifiedConcurrentSystem(int numChargingStations, int numAGVs) {
         this.numChargingStations = numChargingStations;
@@ -34,7 +39,45 @@ public class UnifiedConcurrentSystem {
         this.busyRobots = new ArrayList<>();
         this.chargingExecutor = Executors.newFixedThreadPool(numChargingStations);
         this.taskExecutor = Executors.newFixedThreadPool(numAGVs);
+        this.queueProcessor = Executors.newScheduledThreadPool(1);
         this.allFutures = new ArrayList<>();
+        this.chargingStations = new ArrayList<>();
+        this.totalSlots = 0;
+        
+        // Start periodic queue processor (checks every 2 seconds)
+        queueProcessor.scheduleAtFixedRate(() -> {
+            try {
+                processChargingQueue();
+            } catch (Exception e) {
+                application.Logger.logSystem("ERROR", "Queue processor error: " + e.getMessage());
+            }
+        }, 2, 2, TimeUnit.SECONDS);
+    }
+    
+    public void setChargingStations(List<ChargingStation> stations) {
+        synchronized (this) {
+            this.chargingStations = new ArrayList<>(stations);
+            this.totalSlots = 0;
+            for (ChargingStation station : stations) {
+                this.totalSlots += station.getTotalSlots();
+            }
+            application.Logger.logSystem("INFO", "Charging stations configured: " + 
+                stations.size() + " stations, " + totalSlots + " total slots");
+            
+            // Trigger queue processing in case there were queued robots
+            if (!chargingQueue.isEmpty()) {
+                application.Logger.logSystem("INFO", 
+                    "Processing existing queue of " + chargingQueue.size() + " robots");
+            }
+        }
+        // Process queue after setting stations
+        processChargingQueue();
+    }
+    
+    public List<ChargingRequest> getChargingQueue() {
+        synchronized (this) {
+            return new ArrayList<>(chargingQueue);
+        }
     }
     
     public void addRobot(Robot robot) {
@@ -68,30 +111,81 @@ public class UnifiedConcurrentSystem {
         ChargingRequest request = new ChargingRequest(robot, 100.0f, LocalDateTime.now());
         
         synchronized (this) {
-            if (activeCharging.size() < numChargingStations) {
-                activeCharging.add(robot.getId());
-                startCharging(request);
+            // Check if we have available charging slots
+            if (activeCharging.size() < totalSlots) {
+                // Try to find an available slot and plug in
+                ChargingStation availableStation = findAvailableChargingStation();
+                if (availableStation != null) {
+                    try {
+                        availableStation.plugInRobot(robot);
+                        activeCharging.add(robot.getId());
+                        request.setChargingStation(availableStation);
+                        startCharging(request);
+                        
+                        application.Logger.logResources("SYSTEM", "INFO", 
+                            robot.getId() + " plugged into " + availableStation.getId() + 
+                            " (Queue: " + chargingQueue.size() + ")");
+                    } catch (RobotExceptions.ResourceUnavailableException e) {
+                        // Slot not available, add to queue
+                        chargingQueue.add(request);
+                        application.Logger.logResources("SYSTEM", "WARN", 
+                            robot.getId() + " added to charging queue - " + e.getMessage());
+                    }
+                } else {
+                    chargingQueue.add(request);
+                    application.Logger.logResources("SYSTEM", "INFO", 
+                        robot.getId() + " added to charging queue (no slots available)");
+                }
             } else {
                 chargingQueue.add(request);
                 application.Logger.logResources("SYSTEM", "INFO", 
-                    "AGV " + robot.getId() + " added to charging queue");
+                    robot.getId() + " added to charging queue (Position: " + (chargingQueue.size() + 1) + ")");
             }
+        }
+    }
+    
+    private ChargingStation findAvailableChargingStation() {
+        synchronized (this) {
+            for (ChargingStation station : chargingStations) {
+                int availableSlots = station.getAvailableSlots();
+                application.Logger.logResources("SYSTEM", "DEBUG", 
+                    station.getId() + " has " + availableSlots + " available slots");
+                if (availableSlots > 0) {
+                    return station;
+                }
+            }
+            application.Logger.logResources("SYSTEM", "DEBUG", 
+                "No charging stations with available slots");
+            return null;
         }
     }
     
     private void startCharging(ChargingRequest request) {
         final Robot robot = request.getRobot();
+        final ChargingStation station = request.getChargingStation();
+        
         application.Logger.logResources("SYSTEM", "INFO", 
-            "AGV " + robot.getId() + " started charging");
+            robot.getId() + " started charging at " + 
+            (station != null ? station.getId() : "unknown station"));
         
         Future<?> future = chargingExecutor.submit(() -> {
             try {
                 performCharging(request);
             } finally {
+                // Unplug robot from station FIRST (frees the slot)
+                if (station != null) {
+                    station.plugOutRobot(robot);
+                    application.Logger.logResources("SYSTEM", "INFO", 
+                        robot.getId() + " unplugged from " + station.getId() + 
+                        " - slot now available");
+                }
+                
                 synchronized (this) {
                     activeCharging.remove(robot.getId());
-                    processChargingQueue();
                 }
+                
+                // Process queue AFTER slot is freed
+                processChargingQueue();
             }
         });
         
@@ -142,19 +236,89 @@ public class UnifiedConcurrentSystem {
     }
     
     private void processChargingQueue() {
-        synchronized (this) {
-            if (!chargingQueue.isEmpty() && activeCharging.size() < numChargingStations) {
-                ChargingRequest nextRequest = chargingQueue.remove(0);
+        // Keep processing queue while we have capacity and waiting robots
+        while (true) {
+            ChargingRequest nextRequest = null;
+            int currentlyCharging = 0;
+            int queueSize = 0;
+            int slots = 0;
+            
+            synchronized (this) {
+                currentlyCharging = activeCharging.size();
+                queueSize = chargingQueue.size();
+                slots = totalSlots;
+                
+                if (queueSize > 0) {
+                    application.Logger.logResources("SYSTEM", "INFO", 
+                        "Queue check - Charging: " + currentlyCharging + 
+                        "/" + slots + ", Queue: " + queueSize);
+                }
+                
+                if (!chargingQueue.isEmpty() && currentlyCharging < slots && slots > 0) {
+                    nextRequest = chargingQueue.remove(0);
+                } else {
+                    if (queueSize > 0 && currentlyCharging >= slots) {
+                        application.Logger.logResources("SYSTEM", "INFO", 
+                            "All " + slots + " slots occupied, " + queueSize + " robots waiting");
+                    }
+                    break;
+                }
+            }
+            
+            if (nextRequest != null) {
+                Robot robot = nextRequest.getRobot(); // Define robot at outer scope
                 long waitTimeMinutes = java.time.temporal.ChronoUnit.MINUTES.between(
                     nextRequest.getArrivalTime(), LocalDateTime.now());
+                    
                 if (waitTimeMinutes <= maxWaitTimeMinutes) {
-                    activeCharging.add(nextRequest.getRobot().getId());
-                    startCharging(nextRequest);
+                    ChargingStation availableStation = findAvailableChargingStation();
+                    
+                    if (availableStation != null) {
+                        try {
+                            availableStation.plugInRobot(robot);
+                            
+                            synchronized (this) {
+                                activeCharging.add(robot.getId());
+                            }
+                            
+                            nextRequest.setChargingStation(availableStation);
+                            
+                            application.Logger.logResources("SYSTEM", "INFO", 
+                                robot.getId() + " removed from queue and plugged into " + 
+                                availableStation.getId() + " (Queue remaining: " + chargingQueue.size() + ")");
+                            
+                            startCharging(nextRequest);
+                            
+                        } catch (RobotExceptions.ResourceUnavailableException e) {
+                            // Put back in queue if slot not available
+                            synchronized (this) {
+                                chargingQueue.add(0, nextRequest);
+                            }
+                            application.Logger.logResources("SYSTEM", "WARN", 
+                                robot.getId() + " could not plug in, returned to queue");
+                            break; // Stop processing if slot issue
+                        }
+                    } else {
+                        // Put back in queue - no available station
+                        synchronized (this) {
+                            chargingQueue.add(0, nextRequest);
+                        }
+                        application.Logger.logResources("SYSTEM", "WARN", 
+                            "No available station found, " + robot.getId() + " returned to queue");
+                        break; // Stop processing if no stations
+                    }
                 } else {
-                    totalLeftChargingQueue++;
+                    // Robot waited too long, remove from queue
+                    synchronized (this) {
+                        totalLeftChargingQueue++;
+                    }
                     application.Logger.logResources("SYSTEM", "WARN", 
-                        "AGV " + nextRequest.getRobot().getId() + " left charging queue after waiting " + waitTimeMinutes + " minutes");
+                        robot.getId() + " left charging queue after waiting " + 
+                        waitTimeMinutes + " minutes");
+                    // Continue processing next in queue
                 }
+            } else {
+                break; // No more requests
             }
         }
     }
@@ -260,10 +424,21 @@ public class UnifiedConcurrentSystem {
             // Deliver book
             if (book != null) {
                 robot.deliverBook();
-                book.setStatus(Book.BookStatus.TAKEN);
+                
+                // Determine final status based on task type
+                if (task.getTaskName().contains("Return")) {
+                    // Return task - book goes back to shelf (AVAILABLE)
+                    book.setStatus(Book.BookStatus.AVAILABLE);
+                    application.Logger.logResources("SYSTEM", "INFO", 
+                        robot.getId() + " returned book: " + book.getTitle() + " to " + book.getShelfId());
+                } else {
+                    // Get task - book is taken by user
+                    book.setStatus(Book.BookStatus.TAKEN);
+                    application.Logger.logResources("SYSTEM", "INFO", 
+                        robot.getId() + " delivered book: " + book.getTitle() + " to user");
+                }
+                
                 book.setAssignedRobotId(null);
-                application.Logger.logResources("SYSTEM", "INFO", 
-                    robot.getId() + " delivered book: " + book.getTitle());
             }
             
             robot.completeTask();
@@ -375,9 +550,13 @@ public class UnifiedConcurrentSystem {
     }
     
     public void shutdown() {
+        queueProcessor.shutdown();
         chargingExecutor.shutdown();
         taskExecutor.shutdown();
         try {
+            if (!queueProcessor.awaitTermination(5, TimeUnit.SECONDS)) {
+                queueProcessor.shutdownNow();
+            }
             if (!chargingExecutor.awaitTermination(60, TimeUnit.SECONDS)) {
                 chargingExecutor.shutdownNow();
             }
@@ -385,15 +564,17 @@ public class UnifiedConcurrentSystem {
                 taskExecutor.shutdownNow();
             }
         } catch (InterruptedException e) {
+            queueProcessor.shutdownNow();
             chargingExecutor.shutdownNow();
             taskExecutor.shutdownNow();
         }
     }
     
-    private static class ChargingRequest {
+    public static class ChargingRequest {
         private final Robot robot;
         private final float targetChargePercent;
         private final LocalDateTime arrivalTime;
+        private ChargingStation chargingStation;
         
         public ChargingRequest(Robot robot, float targetChargePercent, LocalDateTime arrivalTime) {
             this.robot = robot;
@@ -404,6 +585,8 @@ public class UnifiedConcurrentSystem {
         public Robot getRobot() { return robot; }
         public float getTargetChargePercent() { return targetChargePercent; }
         public LocalDateTime getArrivalTime() { return arrivalTime; }
+        public ChargingStation getChargingStation() { return chargingStation; }
+        public void setChargingStation(ChargingStation station) { this.chargingStation = station; }
     }
 }
 

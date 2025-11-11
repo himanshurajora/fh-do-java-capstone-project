@@ -9,6 +9,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.GridPane;
 import javafx.util.Duration;
 import java.time.LocalDateTime;
@@ -22,6 +24,7 @@ public class DashboardController {
     private LibrarySystemManager systemManager;
     private Timeline clockTimeline;
     private Timeline logRefreshTimeline;
+    private String currentBookFilter = ""; // Store current search filter
     
     // Top bar
     @FXML private Label clockLabel;
@@ -34,6 +37,9 @@ public class DashboardController {
     @FXML private Label lblTasksQueue;
     @FXML private Label lblTasksCompleted;
     @FXML private Label lblTasksFailed;
+    
+    // Charging
+    @FXML private Label lblChargingQueue;
     
     // Books
     @FXML private TextField txtSearchBook;
@@ -98,6 +104,40 @@ public class DashboardController {
         colBookTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
         colBookAuthor.setCellValueFactory(new PropertyValueFactory<>("author"));
         colBookShelf.setCellValueFactory(new PropertyValueFactory<>("shelf"));
+        
+        // Enable text selection in book title column for easy copying
+        colBookTitle.setCellFactory(column -> {
+            return new TableCell<BookDisplay, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        setText(item);
+                        // Make text selectable
+                        setStyle("-fx-cursor: text;");
+                    }
+                }
+            };
+        });
+        
+        // Add context menu for copying book titles
+        ContextMenu bookContextMenu = new ContextMenu();
+        MenuItem copyTitle = new MenuItem("Copy Title");
+        copyTitle.setOnAction(e -> {
+            BookDisplay selected = tblBooks.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                Clipboard clipboard = Clipboard.getSystemClipboard();
+                ClipboardContent content = new ClipboardContent();
+                content.putString(selected.getTitle());
+                clipboard.setContent(content);
+                systemManager.setStatusMessage("Copied: " + selected.getTitle());
+            }
+        });
+        bookContextMenu.getItems().add(copyTitle);
+        tblBooks.setContextMenu(bookContextMenu);
         
         // Add row factory to color TAKEN books red
         tblBooks.setRowFactory(tv -> new TableRow<BookDisplay>() {
@@ -198,6 +238,7 @@ public class DashboardController {
         lblAvailableRobots.textProperty().bind(systemManager.availableRobotsProperty().asString());
         lblBusyRobots.textProperty().bind(systemManager.busyRobotsProperty().asString());
         lblChargingRobots.textProperty().bind(systemManager.chargingRobotsProperty().asString());
+        lblChargingQueue.textProperty().bind(systemManager.chargingQueueSizeProperty().asString());
         lblTasksQueue.textProperty().bind(systemManager.tasksInQueueProperty().asString());
         lblTasksCompleted.textProperty().bind(systemManager.tasksCompletedProperty().asString());
         lblTasksFailed.textProperty().bind(systemManager.tasksFailedProperty().asString());
@@ -249,20 +290,12 @@ public class DashboardController {
     @FXML
     private void handleSearchBook() {
         String query = txtSearchBook.getText().trim();
-        if (query.isEmpty()) {
-            refreshBooks();
-            return;
-        }
+        currentBookFilter = query; // Store the filter
+        refreshBooks(); // Apply filter through refresh
         
-        ObservableList<BookDisplay> results = FXCollections.observableArrayList();
-        for (Book book : systemManager.getAllBooks()) {
-            if (book.getTitle().toLowerCase().contains(query.toLowerCase()) ||
-                book.getAuthor().toLowerCase().contains(query.toLowerCase())) {
-                results.add(new BookDisplay(book));
-            }
+        if (!query.isEmpty()) {
+            systemManager.setStatusMessage("Filtering books: \"" + query + "\"");
         }
-        tblBooks.setItems(results);
-        systemManager.setStatusMessage("Found " + results.size() + " book(s)");
     }
     
     @FXML
@@ -303,6 +336,14 @@ public class DashboardController {
     }
     
     @FXML
+    private void handleClearSearch() {
+        txtSearchBook.clear();
+        currentBookFilter = "";
+        refreshBooks();
+        systemManager.setStatusMessage("Search filter cleared");
+    }
+    
+    @FXML
     private void handleViewBookDetails() {
         BookDisplay selected = tblBooks.getSelectionModel().getSelectedItem();
         if (selected == null) {
@@ -317,8 +358,10 @@ public class DashboardController {
             alert.setHeaderText(book.getTitle());
             alert.setContentText(
                 "ID: " + book.getId() + "\n" +
+                "Title: " + book.getTitle() + " (click to copy)\n" +
                 "Author: " + book.getAuthor() + "\n" +
                 "Weight: " + String.format("%.2f", book.getWeightKg()) + " kg\n" +
+                "Status: " + book.getStatus() + "\n" +
                 "Shelf: " + (book.getShelfId() != null ? book.getShelfId() : "Not assigned")
             );
             alert.showAndWait();
@@ -327,10 +370,25 @@ public class DashboardController {
     
     private void refreshBooks() {
         ObservableList<BookDisplay> books = FXCollections.observableArrayList();
+        
+        // Apply filter if exists
         for (Book book : systemManager.getAllBooks()) {
-            books.add(new BookDisplay(book));
+            if (currentBookFilter.isEmpty()) {
+                // No filter - show all books
+                books.add(new BookDisplay(book));
+            } else {
+                // Filter by title or author
+                if (book.getTitle().toLowerCase().contains(currentBookFilter.toLowerCase()) ||
+                    book.getAuthor().toLowerCase().contains(currentBookFilter.toLowerCase())) {
+                    books.add(new BookDisplay(book));
+                }
+            }
         }
+        
         tblBooks.setItems(books);
+        
+        // Enable text selection for copying
+        tblBooks.setEditable(false);
     }
     
     // Task Management
@@ -490,63 +548,145 @@ public class DashboardController {
     }
     
     @FXML
+    private void handleViewChargingQueue() {
+        List<UnifiedConcurrentSystem.ChargingRequest> queue = 
+            systemManager.getConcurrentSystem().getChargingQueue();
+        
+        if (queue.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Charging Queue");
+            alert.setHeaderText("Queue is Empty");
+            alert.setContentText("No robots waiting for charging");
+            alert.showAndWait();
+        } else {
+            StringBuilder queueInfo = new StringBuilder();
+            queueInfo.append("Robots waiting to charge:\n\n");
+            
+            for (int i = 0; i < queue.size(); i++) {
+                UnifiedConcurrentSystem.ChargingRequest req = queue.get(i);
+                queueInfo.append((i + 1)).append(". ")
+                    .append(req.getRobot().getId())
+                    .append(" - Battery: ")
+                    .append(String.format("%.1f", req.getRobot().getCurrentChargePercent()))
+                    .append("%\n");
+            }
+            
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Charging Queue");
+            alert.setHeaderText("Robots in Queue: " + queue.size());
+            alert.setContentText(queueInfo.toString());
+            alert.showAndWait();
+        }
+    }
+    
+    @FXML
     private void handleStationDetails() {
         String selected = lstChargingStations.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showWarning("No Selection", "Please select a station to view details");
+        if (selected == null || selected.startsWith("  Slot")) {
+            showWarning("No Selection", "Please select a station header to view details");
+            return;
+        }
+        
+        if (!selected.startsWith("CHG-")) {
             return;
         }
         
         String stationId = selected.split(":")[0];
         ChargingStation station = systemManager.getStationById(stationId);
         if (station != null) {
+            StringBuilder details = new StringBuilder();
+            details.append("ID: ").append(station.getId()).append("\n");
+            details.append("Total Slots: ").append(station.getTotalSlots()).append("\n");
+            details.append("Occupied: ").append(station.getOccupiedSlots()).append("\n");
+            details.append("Available: ").append(station.getAvailableSlots()).append("\n\n");
+            details.append("Slots:\n");
+            
+            List<Slot> slots = station.getSlots();
+            for (int i = 0; i < slots.size(); i++) {
+                Slot slot = slots.get(i);
+                if (slot.getRobot() != null) {
+                    Robot robot = slot.getRobot();
+                    details.append("Slot ").append(i + 1).append(": ")
+                        .append(robot.getId())
+                        .append(" (").append(String.format("%.1f", robot.getCurrentChargePercent())).append("%)\n");
+                } else {
+                    details.append("Slot ").append(i + 1).append(": Empty\n");
+                }
+            }
+            
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Station Details");
             alert.setHeaderText(station.getName());
-            alert.setContentText(
-                "ID: " + station.getId() + "\n" +
-                "Total Slots: " + station.getTotalSlots() + "\n" +
-                "Occupied: " + station.getOccupiedSlots() + "\n" +
-                "Available: " + station.getAvailableSlots()
-            );
+            alert.setContentText(details.toString());
             alert.showAndWait();
         }
     }
     
     private void refreshChargingStations() {
-        ObservableList<String> stations = FXCollections.observableArrayList();
-        for (ChargingStation station : systemManager.getAllStations()) {
-            stations.add(station.getId() + ": " + station.getName() + 
-                " (" + station.getOccupiedSlots() + "/" + station.getTotalSlots() + ")");
-        }
-        lstChargingStations.setItems(stations);
+        ObservableList<String> stationLines = FXCollections.observableArrayList();
         
-        // Add cell factory to color stations by occupancy
+        for (ChargingStation station : systemManager.getAllStations()) {
+            // Add station header
+            stationLines.add(station.getId() + ": " + station.getName() + 
+                " (" + station.getOccupiedSlots() + "/" + station.getTotalSlots() + ")");
+            
+            // Add each slot status
+            List<Slot> slots = station.getSlots();
+            for (int i = 0; i < slots.size(); i++) {
+                Slot slot = slots.get(i);
+                String slotInfo;
+                if (slot.getRobot() != null) {
+                    Robot robot = slot.getRobot();
+                    slotInfo = "  Slot " + (i + 1) + ": " + robot.getId() + 
+                        " (" + String.format("%.1f", robot.getCurrentChargePercent()) + "%)";
+                } else {
+                    slotInfo = "  Slot " + (i + 1) + ": [Empty]";
+                }
+                stationLines.add(slotInfo);
+            }
+        }
+        
+        lstChargingStations.setItems(stationLines);
+        
+        // Add cell factory to color stations and slots
         lstChargingStations.setCellFactory(lv -> new ListCell<String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 
-                getStyleClass().removeAll("station-partial", "station-full");
+                getStyleClass().removeAll("station-partial", "station-full", "slot-occupied", "slot-empty");
                 
                 if (empty || item == null) {
                     setText(null);
                     setStyle("");
                 } else {
                     setText(item);
-                    String stationId = item.split(":")[0];
-                    ChargingStation station = systemManager.getStationById(stationId);
                     
-                    if (station != null) {
-                        int occupied = station.getOccupiedSlots();
-                        int total = station.getTotalSlots();
+                    if (item.startsWith("CHG-")) {
+                        // Station header line
+                        String stationId = item.split(":")[0];
+                        ChargingStation station = systemManager.getStationById(stationId);
                         
-                        if (occupied == total && total > 0) {
-                            // All slots full → Red
-                            getStyleClass().add("station-full");
-                        } else if (occupied > 0) {
-                            // Some slots full → Yellow
-                            getStyleClass().add("station-partial");
+                        if (station != null) {
+                            int occupied = station.getOccupiedSlots();
+                            int total = station.getTotalSlots();
+                            
+                            if (occupied == total && total > 0) {
+                                // All slots full → Red
+                                getStyleClass().add("station-full");
+                            } else if (occupied > 0) {
+                                // Some slots full → Yellow
+                                getStyleClass().add("station-partial");
+                            }
+                        }
+                    } else if (item.contains("Slot")) {
+                        // Slot line
+                        if (!item.contains("[Empty]")) {
+                            // Slot occupied
+                            getStyleClass().add("slot-occupied");
+                        } else {
+                            // Slot empty
+                            getStyleClass().add("slot-empty");
                         }
                     }
                 }

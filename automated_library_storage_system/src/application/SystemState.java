@@ -64,8 +64,8 @@ public class SystemState {
         state.config = new SystemConfig();
         state.config.setBatteryThreshold(15.0f);
         state.config.setLogRefreshInterval(2);
-        state.config.setNumChargingStations(3);
-        state.config.setNumSlotsPerStation(3);
+        state.config.setNumChargingStations(2);
+        state.config.setNumSlotsPerStation(1);
         
         // Create default shelves
         for (int i = 1; i <= 5; i++) {
@@ -77,12 +77,12 @@ public class SystemState {
             state.shelves.add(shelf);
         }
         
-        // Create default charging stations
-        for (int i = 1; i <= 3; i++) {
+        // Create default charging stations (2 stations, 1 slot each)
+        for (int i = 1; i <= 2; i++) {
             ChargingStationData station = new ChargingStationData();
             station.setId("CHG-" + i);
             station.setName("Station " + i);
-            station.setNumSlots(3);
+            station.setNumSlots(1);
             state.stations.add(station);
         }
         

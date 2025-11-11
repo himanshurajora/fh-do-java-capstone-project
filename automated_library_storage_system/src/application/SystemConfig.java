@@ -3,8 +3,8 @@ package application;
 public class SystemConfig {
     private float batteryThreshold = 15.0f;
     private int logRefreshInterval = 2;
-    private int numChargingStations = 3;
-    private int numSlotsPerStation = 3;
+    private int numChargingStations = 2;
+    private int numSlotsPerStation = 1;
     private int maxShelfCapacity = 10;
     
     public float getBatteryThreshold() {
