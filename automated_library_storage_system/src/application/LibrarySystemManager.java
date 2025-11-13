@@ -119,6 +119,7 @@ public class LibrarySystemManager {
                 robotData.getExecutionDuration()
             );
             robot.setCurrentChargePercent(robotData.getCurrentChargePercent());
+            robot.setBatteryThreshold(config.getBatteryThreshold());
             library.addRobot(robot);
             robotMap.put(robot.getId(), robot);
         }
@@ -412,6 +413,7 @@ public class LibrarySystemManager {
         try {
             Robot robot = new Robot(id, execDuration);
             robot.setCurrentChargePercent(100.0f);
+            robot.setBatteryThreshold(config.getBatteryThreshold());
             
             library.addRobot(robot);
             robotMap.put(robot.getId(), robot);

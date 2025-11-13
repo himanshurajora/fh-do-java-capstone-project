@@ -8,6 +8,7 @@ public class Robot extends Resource {
     private static final int MAX_BOOKS_PER_ROBOT = 1; // Only 1 book at a time
     
     private float currentChargePercent = 100;
+    private float batteryThreshold = 15.0f; // Default threshold, can be set from config
     private boolean isDocked = false;
     private Book carryingBook = null;
     private String currentTaskId = null;
@@ -60,7 +61,7 @@ public class Robot extends Resource {
             if (carryingBook != null) {
                 throw new OverloadException("Robot already carrying a book");
             }
-            if (needsCharging(20)) {
+            if (needsCharging(batteryThreshold)) {
                 throw new LowBatteryException("Battery too low");
             }
             
@@ -91,6 +92,14 @@ public class Robot extends Resource {
 
     public void setCurrentChargePercent(float currentChargePercent) {
         this.currentChargePercent = currentChargePercent;
+    }
+
+    public float getBatteryThreshold() {
+        return batteryThreshold;
+    }
+
+    public void setBatteryThreshold(float batteryThreshold) {
+        this.batteryThreshold = batteryThreshold;
     }
 
     public boolean isDocked() {

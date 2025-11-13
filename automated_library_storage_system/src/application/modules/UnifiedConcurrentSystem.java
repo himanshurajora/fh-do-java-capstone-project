@@ -83,7 +83,7 @@ public class UnifiedConcurrentSystem {
     public void addRobot(Robot robot) {
         synchronized (this) {
             robots.add(robot);
-            if (robot.getCurrentChargePercent() < 20) {
+            if (robot.getCurrentChargePercent() < robot.getBatteryThreshold()) {
                 requestCharging(robot);
             } else {
                 availableRobots.add(robot);
@@ -334,8 +334,8 @@ public class UnifiedConcurrentSystem {
                 float requiredBattery = candidateTask.getBatteryRequired();
                 
                 for (Robot robot : new ArrayList<>(availableRobots)) {
-                    // Check if robot has enough battery for assignment (must be >= 15%)
-                    if (robot.getCurrentChargePercent() < 15.0f) {
+                    // Check if robot has enough battery for assignment
+                    if (robot.getCurrentChargePercent() < robot.getBatteryThreshold()) {
                         // Reject assignment - send robot to charging
                         application.Logger.logResources("SYSTEM", "WARN", 
                             robot.getId() + " rejected task assignment - battery too low (" + 
@@ -393,7 +393,7 @@ public class UnifiedConcurrentSystem {
             busyRobots.remove(robot);
             
             // Check if robot needs charging after task completion
-            if (robot.getCurrentChargePercent() < 15.0f) {
+            if (robot.getCurrentChargePercent() < robot.getBatteryThreshold()) {
                 application.Logger.logResources("SYSTEM", "INFO", 
                     robot.getId() + " released - battery low (" + 
                     String.format("%.1f", robot.getCurrentChargePercent()) + "%), sending to charge");
