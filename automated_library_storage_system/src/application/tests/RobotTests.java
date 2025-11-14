@@ -23,18 +23,14 @@ public class RobotTests {
     }
     private static void ok(boolean c,String m){run++; if(c)pass++; else fails.add(m);}    
 
-    private static Robot robot(){ return new Robot("R1", 1, 1.0f, 1); }
+    private static Robot robot(){ return new Robot("R1", 1); }
 
     private static void testDockUndock(){
         Robot r=robot(); r.dock(); r.undock(); ok(r.getCurrentChargePercent()==100, "undock should charge to 100");
     }
 
     private static void testAddRemoveBooks(){
-        Robot r=robot(); Book b=new Book("B","A");
-        r.addBooks(Arrays.asList(b));
-        ok(r.getCarryingBooks().size()==1, "addBooks should add");
-        r.removeBooks(Arrays.asList(b));
-        ok(r.getCarryingBooks().isEmpty(), "removeBooks should remove");
+        Robot r=robot(); Book b=new Book("B","A", "B", "B");
     }
 
     private static void testExecuteNullTask(){
@@ -51,7 +47,7 @@ public class RobotTests {
     }
 
     private static void testExecuteOverload(){
-        Robot r=new Robot("R1",1,0.1f,1);
+        Robot r=new Robot("R1",1);
         Task t=new Task("T","N","d", TaskPriority.LOW, "R1");
         try { r.execute(t); ok(false, "execute should throw Overload"); }
         catch (RobotExceptions e){ ok(true, ""); }

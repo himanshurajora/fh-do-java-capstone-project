@@ -19,7 +19,7 @@ public class ChargingStationTests {
     private static void ok(boolean c,String m){run++; if(c)pass++; else fails.add(m);}    
 
     private static ChargingStation stationWith(int available){
-        ChargingStation cs=new ChargingStation();
+        ChargingStation cs=new ChargingStation("Test", "Test", 2);
         try {
             java.lang.reflect.Field f = ChargingStation.class.getDeclaredField("slots");
             f.setAccessible(true);
@@ -31,16 +31,16 @@ public class ChargingStationTests {
     }
 
     private static void testPlugInNoSlots(){
-        ChargingStation cs=stationWith(0); Robot r=new Robot("R",1,1,1);
+        ChargingStation cs=stationWith(0); Robot r=new Robot("R",1);
         try{ cs.plugInRobot(r); ok(false,"should throw when no slots"); }
         catch(RobotExceptions.ResourceUnavailableException e){ ok(true,""); }
     }
     private static void testPlugInWithSlot(){
-        ChargingStation cs=stationWith(1); Robot r=new Robot("R",1,1,1);
+        ChargingStation cs=stationWith(1); Robot r=new Robot("R",1);
         try{ cs.plugInRobot(r); ok(true,""); } catch(Exception e){ ok(false,"plugIn should work"); }
     }
     private static void testPlugOutRobot(){
-        ChargingStation cs=stationWith(1); Robot r=new Robot("R",1,1,1);
+        ChargingStation cs=stationWith(1); Robot r=new Robot("R",1);
         try{ cs.plugInRobot(r); cs.plugOutRobot(r); ok(true,""); } catch(Exception e){ ok(false,"plugOut should work"); }
     }
     private static void testPlugInNull(){

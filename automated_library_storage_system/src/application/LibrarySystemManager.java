@@ -239,7 +239,7 @@ public class LibrarySystemManager {
                 TaskPriority.MEDIUM,
                 "AUTO"
             );
-s
+
             task.setRelatedBook(book);
             task.setTaskDurationSeconds(taskDuration);
             task.setBatteryRequired(batteryRequired);
