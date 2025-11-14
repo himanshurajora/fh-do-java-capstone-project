@@ -180,3 +180,12 @@ An automated library management system that uses robots to retrieve and return b
 - System state is loaded automatically when the application starts
 - Robots automatically charge when battery falls below the configured threshold
 - Tasks are automatically assigned to available robots based on priority and battery level
+
+
+## Diagrams
+
+![Concurrency](diagrams/cuncurrency.png)
+
+![UML](diagram/uml.png)
+
+![Logger Sequence](diagrams/logger-sequence.png)
