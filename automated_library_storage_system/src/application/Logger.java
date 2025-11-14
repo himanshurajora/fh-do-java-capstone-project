@@ -48,12 +48,10 @@ public class Logger {
         write(Scope.COMMON, "all", level, message);
     }
 
-    // Backward-compat convenience: map to RESOURCES
     public static void logRobot(String robotId, String level, String message) {
         write(Scope.RESOURCES, robotId, level, message);
     }
 
-    // Backward-compat convenience: map to RESOURCES
     public static void logCharging(String stationName, String level, String message) {
         write(Scope.RESOURCES, stationName, level, message);
     }
@@ -148,7 +146,6 @@ public class Logger {
             e.printStackTrace();
         }
 
-        // Byte stream simulation: also write raw bytes to a lightweight daily bin
         Path bin = LOG_ROOT.resolve("byte-stream-" + now.format(DATE_FMT) + ".bin");
         try (FileOutputStream fos = new FileOutputStream(bin.toFile(), true)) {
             byte[] payload = (line + System.lineSeparator()).getBytes(StandardCharsets.UTF_8);
@@ -205,5 +202,3 @@ public class Logger {
         return s == null ? "all" : s.replaceAll("[^a-zA-Z0-9_-]", "_");
     }
 }
-
-

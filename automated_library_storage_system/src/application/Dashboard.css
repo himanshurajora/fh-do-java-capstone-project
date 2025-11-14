@@ -3,7 +3,6 @@
     -fx-background-color: #f5f7fa;
 }
 
-/* Top bar */
 .top-bar {
     -fx-background-color: linear-gradient(to right, #0D47A1, #1565C0);
     -fx-padding: 12 20;
@@ -22,7 +21,6 @@
     -fx-font-size: 13px;
 }
 
-/* Stats bar */
 .stats-bar {
     -fx-background-color: white;
     -fx-border-color: #e0e0e0;
@@ -40,7 +38,6 @@
     -fx-font-size: 20px;
 }
 
-/* Cards */
 .card {
     -fx-background-color: white;
     -fx-padding: 15;
@@ -63,7 +60,6 @@
     -fx-text-fill: #444;
 }
 
-/* Buttons */
 .primary-btn {
     -fx-background-color: #0D47A1;
     -fx-text-fill: white;
@@ -102,7 +98,6 @@
     -fx-background-color: #BDBDBD;
 }
 
-/* Tables */
 .table-view {
     -fx-background-radius: 8;
     -fx-border-radius: 8;
@@ -142,7 +137,6 @@
     -fx-fill: #c62828;
 }
 
-/* Robot row styling by status */
 .robot-charging {
     -fx-background-color: #fff9c4;
     -fx-text-fill: #f57f17;
@@ -195,7 +189,6 @@
     -fx-background-color: #a5d6a7;
 }
 
-/* Charging station list cell styling */
 .station-partial {
     -fx-background-color: #fff9c4;
     -fx-text-fill: #f57f17;
@@ -236,7 +229,6 @@
     -fx-background-color: #f0f0f0;
 }
 
-/* Text fields */
 .text-field {
     -fx-background-radius: 6;
     -fx-border-radius: 6;
@@ -249,13 +241,11 @@
     -fx-border-color: #0D47A1;
 }
 
-/* ComboBox */
 .combo-box {
     -fx-background-radius: 6;
     -fx-border-radius: 6;
 }
 
-/* ListView */
 .list-view {
     -fx-background-radius: 8;
     -fx-border-radius: 8;
@@ -272,7 +262,6 @@
     -fx-background-color: #E3F2FD;
 }
 
-/* Settings Panel */
 .settings-panel {
     -fx-background-color: white;
     -fx-border-color: #e0e0e0;
@@ -285,7 +274,6 @@
     -fx-font-size: 13px;
 }
 
-/* Status bar */
 .status-bar {
     -fx-background-color: #263238;
     -fx-padding: 8 15;
@@ -307,7 +295,6 @@
     -fx-font-size: 11px;
 }
 
-/* Spinner */
 .spinner {
     -fx-background-radius: 6;
 }
@@ -316,7 +303,6 @@
     -fx-background-radius: 6 0 0 6;
 }
 
-/* Scrollbar */
 .scroll-bar:vertical .thumb {
     -fx-background-color: #B0BEC5;
     -fx-background-radius: 10;
@@ -327,7 +313,6 @@
     -fx-background-radius: 10;
 }
 
-/* Dialog styling */
 .dialog-pane {
     -fx-background-color: white;
 }

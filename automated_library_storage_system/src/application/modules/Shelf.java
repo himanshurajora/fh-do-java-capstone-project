@@ -7,7 +7,7 @@ public class Shelf {
     private String id;
     private String name;
     private String category;
-    private int distance; // Distance from hub (10-50)
+    private int distance;
     private int maxCapacity;
     private List<Book> books = new ArrayList<>();
 
@@ -45,11 +45,11 @@ public class Shelf {
     public boolean hasSpace() { return books.size() < maxCapacity; }
     
     public int getTaskDurationSeconds() {
-        return distance; // 10-50 seconds
+        return distance;
     }
     
     public float getTaskBatteryDrain() {
-        return distance / 2.0f; // 5-25%
+        return distance / 2.0f;
     }
 
     public void addBook(Book book) {
@@ -58,7 +58,6 @@ public class Shelf {
             application.Logger.logStorage(id, "ERROR", "Shelf full, cannot add: " + book.getTitle());
             throw new IllegalStateException("Shelf is full");
         }
-        // Category validation
         if (!book.getCategory().equalsIgnoreCase(this.category)) {
             application.Logger.logStorage(id, "ERROR", 
                 "Category mismatch: Book '" + book.getTitle() + "' is " + book.getCategory() + 

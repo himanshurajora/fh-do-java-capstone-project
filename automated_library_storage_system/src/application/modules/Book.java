@@ -2,9 +2,9 @@ package application.modules;
 
 public class Book {
     public enum BookStatus {
-        AVAILABLE,    // On shelf, available
-        IN_TRANSIT,   // Being carried by robot
-        TAKEN         // Taken by user
+        AVAILABLE,
+        IN_TRANSIT,
+        TAKEN
     }
     
     private String id;

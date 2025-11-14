@@ -18,8 +18,8 @@ public class Task {
     private LocalDateTime completedAt;
     private List<String> logEntries;
     private Book relatedBook;
-    private int taskDurationSeconds = 15; // Default, will be overridden by shelf distance
-    private float batteryRequired = 7.5f; // Default, will be overridden by shelf distance
+    private int taskDurationSeconds = 15;
+    private float batteryRequired = 7.5f;
     
     public Task(String taskId, String taskName, String description, TaskPriority priority, String assignedTo) {
         this.taskId = taskId;
@@ -98,7 +98,6 @@ public class Task {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String logEntry = String.format("[%s] %s: %s", timestamp, action, description);
         logEntries.add(logEntry);
-        // Also write to tasks scope log file
         application.Logger.logTasks("INFO", logEntry);
     }
 

@@ -24,12 +24,10 @@ public class DashboardController {
     private LibrarySystemManager systemManager;
     private Timeline clockTimeline;
     private Timeline logRefreshTimeline;
-    private String currentBookFilter = ""; // Store current search filter
-    
-    // Top bar
+    private String currentBookFilter = "";
+
     @FXML private Label clockLabel;
-    
-    // Stats
+
     @FXML private Label lblTotalBooks;
     @FXML private Label lblAvailableRobots;
     @FXML private Label lblBusyRobots;
@@ -37,53 +35,44 @@ public class DashboardController {
     @FXML private Label lblTasksQueue;
     @FXML private Label lblTasksCompleted;
     @FXML private Label lblTasksFailed;
-    
-    // Charging
+
     @FXML private Label lblChargingQueue;
-    
-    // Books
+
     @FXML private TextField txtSearchBook;
     @FXML private TableView<BookDisplay> tblBooks;
     @FXML private TableColumn<BookDisplay, String> colBookTitle;
     @FXML private TableColumn<BookDisplay, String> colBookAuthor;
     @FXML private TableColumn<BookDisplay, String> colBookShelf;
-    
-    // Tasks
+
     @FXML private TextField txtTaskBookTitle;
     @FXML private TableView<TaskDisplay> tblTasks;
     @FXML private TableColumn<TaskDisplay, String> colTaskName;
     @FXML private TableColumn<TaskDisplay, String> colTaskStatus;
     @FXML private TableColumn<TaskDisplay, String> colTaskPriority;
     @FXML private TableColumn<TaskDisplay, String> colTaskAssigned;
-    
-    // Equipment
+
     @FXML private TableView<RobotDisplay> tblRobots;
     @FXML private TableColumn<RobotDisplay, String> colRobotId;
     @FXML private TableColumn<RobotDisplay, String> colRobotBattery;
     @FXML private TableColumn<RobotDisplay, String> colRobotStatus;
     @FXML private TableColumn<RobotDisplay, String> colRobotLoad;
-    
-    // Charging Stations
+
     @FXML private ListView<String> lstChargingStations;
-    
-    // Shelves
+
     @FXML private TableView<ShelfDisplay> tblShelves;
     @FXML private TableColumn<ShelfDisplay, String> colShelfName;
     @FXML private TableColumn<ShelfDisplay, String> colShelfBooks;
     @FXML private TableColumn<ShelfDisplay, String> colShelfCapacity;
     @FXML private TableColumn<ShelfDisplay, String> colShelfStatus;
-    
-    // Logs
+
     @FXML private ComboBox<String> cmbLogScope;
     @FXML private TableView<LogDisplay> tblLogs;
     @FXML private TableColumn<LogDisplay, String> colLogTime;
     @FXML private TableColumn<LogDisplay, String> colLogMessage;
-    
-    // Settings
+
     @FXML private Spinner<Integer> spnBatteryThreshold;
     @FXML private Spinner<Integer> spnLogRefresh;
-    
-    // Status bar
+
     @FXML private Label lblStatus;
     @FXML private Label lblSystemTime;
     
@@ -100,12 +89,10 @@ public class DashboardController {
     }
     
     private void setupTables() {
-        // Books table
         colBookTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
         colBookAuthor.setCellValueFactory(new PropertyValueFactory<>("author"));
         colBookShelf.setCellValueFactory(new PropertyValueFactory<>("shelf"));
-        
-        // Enable text selection in book title column for easy copying
+
         colBookTitle.setCellFactory(column -> {
             return new TableCell<BookDisplay, String>() {
                 @Override
@@ -116,14 +103,12 @@ public class DashboardController {
                         setGraphic(null);
                     } else {
                         setText(item);
-                        // Make text selectable
                         setStyle("-fx-cursor: text;");
                     }
                 }
             };
         });
-        
-        // Add context menu for copying book titles
+
         ContextMenu bookContextMenu = new ContextMenu();
         MenuItem copyTitle = new MenuItem("Copy Title");
         copyTitle.setOnAction(e -> {
@@ -138,8 +123,7 @@ public class DashboardController {
         });
         bookContextMenu.getItems().add(copyTitle);
         tblBooks.setContextMenu(bookContextMenu);
-        
-        // Add row factory to color TAKEN books red
+
         tblBooks.setRowFactory(tv -> new TableRow<BookDisplay>() {
             @Override
             protected void updateItem(BookDisplay item, boolean empty) {
@@ -158,20 +142,17 @@ public class DashboardController {
                 }
             }
         });
-        
-        // Tasks table
+
         colTaskName.setCellValueFactory(new PropertyValueFactory<>("name"));
         colTaskStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         colTaskPriority.setCellValueFactory(new PropertyValueFactory<>("priority"));
         colTaskAssigned.setCellValueFactory(new PropertyValueFactory<>("assigned"));
-        
-        // Robots table
+
         colRobotId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colRobotBattery.setCellValueFactory(new PropertyValueFactory<>("battery"));
         colRobotStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         colRobotLoad.setCellValueFactory(new PropertyValueFactory<>("load"));
-        
-        // Add row factory to color robots by status
+
         tblRobots.setRowFactory(tv -> new TableRow<RobotDisplay>() {
             @Override
             protected void updateItem(RobotDisplay item, boolean empty) {
@@ -185,34 +166,28 @@ public class DashboardController {
                     Robot robot = systemManager.getRobotById(item.getId());
                     if (robot != null) {
                         if (robot.isDocked()) {
-                            // Charging → Yellow
+
                             getStyleClass().add("robot-charging");
                         } else if (robot.getCurrentChargePercent() < 15.0f) {
-                            // Low battery → Red
                             getStyleClass().add("robot-low-battery");
                         } else if (robot.isBusy()) {
-                            // Assigned task → Blue
                             getStyleClass().add("robot-busy");
                         } else {
-                            // Available → Green
                             getStyleClass().add("robot-available");
                         }
                     }
                 }
             }
         });
-        
-        // Shelves table
+
         colShelfName.setCellValueFactory(new PropertyValueFactory<>("name"));
         colShelfBooks.setCellValueFactory(new PropertyValueFactory<>("bookCount"));
         colShelfCapacity.setCellValueFactory(new PropertyValueFactory<>("capacity"));
         colShelfStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
-        
-        // Logs table
+
         colLogTime.setCellValueFactory(new PropertyValueFactory<>("time"));
         colLogMessage.setCellValueFactory(new PropertyValueFactory<>("message"));
-        
-        // Log scope combo box
+
         cmbLogScope.setItems(FXCollections.observableArrayList(
             "ALL", "SYSTEM", "TASKS", "RESOURCES", "STORAGE", "COMMON"
         ));
@@ -227,8 +202,7 @@ public class DashboardController {
         SpinnerValueFactory<Integer> logFactory = 
             new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10, 2, 1);
         spnLogRefresh.setValueFactory(logFactory);
-        
-        // Load from config
+
         spnBatteryThreshold.getValueFactory().setValue((int)systemManager.getConfig().getBatteryThreshold());
         spnLogRefresh.getValueFactory().setValue(systemManager.getConfig().getLogRefreshInterval());
     }
@@ -262,7 +236,6 @@ public class DashboardController {
     }
     
     private void startDataRefresh() {
-        // Refresh all panels every second for live updates
         Timeline dataRefreshTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             refreshBooks();
             refreshRobots();
@@ -281,17 +254,14 @@ public class DashboardController {
         refreshChargingStations();
         refreshTasks();
         refreshLogs();
-        
-        // Start auto-refresh for all panels
         startDataRefresh();
     }
-    
-    // Books Management
+
     @FXML
     private void handleSearchBook() {
         String query = txtSearchBook.getText().trim();
-        currentBookFilter = query; // Store the filter
-        refreshBooks(); // Apply filter through refresh
+        currentBookFilter = query;
+        refreshBooks();
         
         if (!query.isEmpty()) {
             systemManager.setStatusMessage("Filtering books: \"" + query + "\"");
@@ -387,14 +357,11 @@ public class DashboardController {
     
     private void refreshBooks() {
         ObservableList<BookDisplay> books = FXCollections.observableArrayList();
-        
-        // Apply filter if exists
+
         for (Book book : systemManager.getAllBooks()) {
             if (currentBookFilter.isEmpty()) {
-                // No filter - show all books
                 books.add(new BookDisplay(book));
             } else {
-                // Filter by title or author
                 if (book.getTitle().toLowerCase().contains(currentBookFilter.toLowerCase()) ||
                     book.getAuthor().toLowerCase().contains(currentBookFilter.toLowerCase())) {
                     books.add(new BookDisplay(book));
@@ -403,12 +370,10 @@ public class DashboardController {
         }
         
         tblBooks.setItems(books);
-        
-        // Enable text selection for copying
+
         tblBooks.setEditable(false);
     }
     
-    // Task Management
     @FXML
     private void handleGetBook() {
         String bookTitle = txtTaskBookTitle.getText().trim();
@@ -444,8 +409,7 @@ public class DashboardController {
         }
         tblTasks.setItems(tasks);
     }
-    
-    // Equipment Management
+
     @FXML
     private void handleAddRobot() {
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -523,8 +487,7 @@ public class DashboardController {
         }
         tblRobots.setItems(robots);
     }
-    
-    // Charging Stations
+
     @FXML
     private void handleAddStation() {
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -643,11 +606,10 @@ public class DashboardController {
         ObservableList<String> stationLines = FXCollections.observableArrayList();
         
         for (ChargingStation station : systemManager.getAllStations()) {
-            // Add station header
+
             stationLines.add(station.getId() + ": " + station.getName() + 
                 " (" + station.getOccupiedSlots() + "/" + station.getTotalSlots() + ")");
-            
-            // Add each slot status
+
             List<Slot> slots = station.getSlots();
             for (int i = 0; i < slots.size(); i++) {
                 Slot slot = slots.get(i);
@@ -665,7 +627,6 @@ public class DashboardController {
         
         lstChargingStations.setItems(stationLines);
         
-        // Add cell factory to color stations and slots
         lstChargingStations.setCellFactory(lv -> new ListCell<String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -680,7 +641,6 @@ public class DashboardController {
                     setText(item);
                     
                     if (item.startsWith("CHG-")) {
-                        // Station header line
                         String stationId = item.split(":")[0];
                         ChargingStation station = systemManager.getStationById(stationId);
                         
@@ -689,20 +649,15 @@ public class DashboardController {
                             int total = station.getTotalSlots();
                             
                             if (occupied == total && total > 0) {
-                                // All slots full → Red
                                 getStyleClass().add("station-full");
                             } else if (occupied > 0) {
-                                // Some slots full → Yellow
                                 getStyleClass().add("station-partial");
                             }
                         }
                     } else if (item.contains("Slot")) {
-                        // Slot line
                         if (!item.contains("[Empty]")) {
-                            // Slot occupied
                             getStyleClass().add("slot-occupied");
                         } else {
-                            // Slot empty
                             getStyleClass().add("slot-empty");
                         }
                     }
@@ -711,7 +666,6 @@ public class DashboardController {
         });
     }
     
-    // Shelves Management
     @FXML
     private void handleAddShelf() {
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -806,8 +760,7 @@ public class DashboardController {
         }
         tblShelves.setItems(shelves);
     }
-    
-    // Logs
+
     @FXML
     private void handleRefreshLogs() {
         refreshLogs();
@@ -825,8 +778,7 @@ public class DashboardController {
             for (String line : logLines) {
                 logs.add(LogDisplay.fromLine(line));
             }
-            
-            // Sort by time descending (most recent first)
+
             logs.sort((a, b) -> b.getTime().compareTo(a.getTime()));
             
             tblLogs.setItems(logs.stream().limit(100).collect(Collectors.toCollection(FXCollections::observableArrayList)));
@@ -834,15 +786,13 @@ public class DashboardController {
             Logger.logSystem("ERROR", "Failed to refresh logs: " + e.getMessage());
         }
     }
-    
-    // Settings
+
     @FXML
     private void handleSaveConfig() {
         try {
             systemManager.getConfig().setBatteryThreshold(spnBatteryThreshold.getValue().floatValue());
             systemManager.getConfig().setLogRefreshInterval(spnLogRefresh.getValue());
-            
-            // Restart log refresh with new interval
+
             logRefreshTimeline.stop();
             logRefreshTimeline = new Timeline(new KeyFrame(
                 Duration.seconds(spnLogRefresh.getValue()), 
@@ -867,8 +817,7 @@ public class DashboardController {
             showError("Failed to save state", e.getMessage());
         }
     }
-    
-    // Utility methods
+
     private void showError(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
@@ -890,8 +839,7 @@ public class DashboardController {
         if (logRefreshTimeline != null) logRefreshTimeline.stop();
         if (systemManager != null) systemManager.shutdown();
     }
-    
-    // Display classes for TableView
+
     public static class BookDisplay {
         private final String id;
         private final String title;
@@ -902,8 +850,7 @@ public class DashboardController {
             this.id = book.getId();
             this.title = book.getTitle() + " [" + book.getCategory() + "]";
             this.author = book.getAuthor();
-            
-            // Show status in shelf column
+
             if (book.getStatus() == Book.BookStatus.TAKEN) {
                 this.shelf = "[TAKEN]";
             } else if (book.getStatus() == Book.BookStatus.IN_TRANSIT) {
@@ -1009,12 +956,11 @@ public class DashboardController {
         }
         
         public static LogDisplay fromLine(String line) {
-            // Parse log line: [2025-11-10 12:34:56] SCOPE.LEVEL(name): message
             if (line.startsWith("[")) {
                 int endBracket = line.indexOf("]");
                 if (endBracket > 0) {
                     String timestamp = line.substring(1, endBracket);
-                    String time = timestamp.substring(11); // HH:mm:ss
+                    String time = timestamp.substring(11);
                     String message = line.substring(endBracket + 2);
                     return new LogDisplay(time, message);
                 }

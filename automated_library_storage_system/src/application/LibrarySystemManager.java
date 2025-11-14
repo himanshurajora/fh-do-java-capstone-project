@@ -19,8 +19,7 @@ public class LibrarySystemManager {
     
     private ScheduledExecutorService stateUpdateExecutor;
     private ScheduledExecutorService autoSaveExecutor;
-    
-    // Observable properties for UI binding
+
     private final IntegerProperty totalBooks = new SimpleIntegerProperty(0);
     private final IntegerProperty totalShelves = new SimpleIntegerProperty(0);
     private final IntegerProperty totalRobots = new SimpleIntegerProperty(0);
@@ -53,8 +52,7 @@ public class LibrarySystemManager {
     
     private void initializeSystem() {
         library = new Library();
-        
-        // Initialize shelves
+
         for (SystemState.ShelfData shelfData : systemState.getShelves()) {
             Shelf shelf = new Shelf(
                 shelfData.getId(), 
@@ -66,8 +64,7 @@ public class LibrarySystemManager {
             library.addShelf(shelf);
             shelfMap.put(shelf.getId(), shelf);
         }
-        
-        // Initialize books
+
         for (SystemState.BookData bookData : systemState.getBooks()) {
             Book book = new Book(
                 bookData.getId(), 
@@ -76,8 +73,7 @@ public class LibrarySystemManager {
                 bookData.getCategory()
             );
             book.setShelfId(bookData.getShelfId());
-            
-            // Set book status from saved state
+
             try {
                 book.setStatus(Book.BookStatus.valueOf(bookData.getStatus()));
             } catch (Exception e) {
@@ -86,8 +82,7 @@ public class LibrarySystemManager {
             
             library.addBook(book);
             bookMap.put(book.getId(), book);
-            
-            // Add book to its shelf if available and category matches
+
             if (book.isAvailable() && bookData.getShelfId() != null) {
                 Shelf shelf = shelfMap.get(bookData.getShelfId());
                 if (shelf != null && !shelf.isFull() && 
@@ -100,8 +95,7 @@ public class LibrarySystemManager {
                 }
             }
         }
-        
-        // Initialize charging stations
+
         for (SystemState.ChargingStationData stationData : systemState.getStations()) {
             ChargingStation station = new ChargingStation(
                 stationData.getId(), 
@@ -111,8 +105,7 @@ public class LibrarySystemManager {
             library.addStation(station);
             stationMap.put(station.getId(), station);
         }
-        
-        // Initialize robots
+
         for (SystemState.RobotData robotData : systemState.getRobots()) {
             Robot robot = new Robot(
                 robotData.getId(),
@@ -123,17 +116,14 @@ public class LibrarySystemManager {
             library.addRobot(robot);
             robotMap.put(robot.getId(), robot);
         }
-        
-        // Initialize concurrent system
+
         concurrentSystem = new UnifiedConcurrentSystem(
             config.getNumChargingStations(), 
             systemState.getRobots().size()
         );
-        
-        // Set charging stations in concurrent system
+
         concurrentSystem.setChargingStations(new ArrayList<>(stationMap.values()));
-        
-        // Add robots to concurrent system
+
         for (Robot robot : robotMap.values()) {
             concurrentSystem.addRobot(robot);
         }
@@ -142,13 +132,12 @@ public class LibrarySystemManager {
     }
     
     private void startBackgroundTasks() {
-        // Update UI properties periodically
+
         stateUpdateExecutor = Executors.newScheduledThreadPool(1);
         stateUpdateExecutor.scheduleAtFixedRate(() -> {
             Platform.runLater(this::updateObservableProperties);
         }, 0, 500, TimeUnit.MILLISECONDS);
         
-        // Auto-save state every 30 seconds
         autoSaveExecutor = Executors.newScheduledThreadPool(1);
         autoSaveExecutor.scheduleAtFixedRate(this::saveState, 30, 30, TimeUnit.SECONDS);
     }
@@ -168,7 +157,7 @@ public class LibrarySystemManager {
     
     public void saveState() {
         try {
-            // Update system state from current state
+
             systemState.getBooks().clear();
             for (Book book : bookMap.values()) {
                 SystemState.BookData bookData = new SystemState.BookData();
@@ -211,8 +200,7 @@ public class LibrarySystemManager {
             setStatusMessage("Error saving state: " + e.getMessage());
         }
     }
-    
-    // Task operations
+
     public void createGetBookTask(String bookTitle) {
         try {
             Book book = findBookByTitle(bookTitle);
@@ -232,8 +220,7 @@ public class LibrarySystemManager {
                 setStatusMessage("Book is not on any shelf: " + bookTitle);
                 return;
             }
-            
-            // Get shelf to determine distance
+
             Shelf shelf = shelfMap.get(book.getShelfId());
             if (shelf == null) {
                 setStatusMessage("Error: Book shelf not found");
@@ -252,13 +239,11 @@ public class LibrarySystemManager {
                 TaskPriority.MEDIUM,
                 "AUTO"
             );
-            
-            // Set distance-based parameters
+s
             task.setRelatedBook(book);
             task.setTaskDurationSeconds(taskDuration);
             task.setBatteryRequired(batteryRequired);
-            
-            // Remove book from shelf (it will be in transit)
+
             try {
                 shelf.removeBook(book);
             } catch (Exception e) {
@@ -284,22 +269,19 @@ public class LibrarySystemManager {
                 setStatusMessage("Book not found: " + bookTitle);
                 return;
             }
-            
-            // Check if book is TAKEN (can only return TAKEN books)
+
             if (book.getStatus() != Book.BookStatus.TAKEN) {
                 setStatusMessage("Book cannot be returned: " + bookTitle + " [" + book.getStatus() + "]");
                 Logger.logSystem("WARN", "Cannot return book that is not TAKEN: " + bookTitle);
                 return;
             }
-            
-            // Find target shelf (auto-assign if not specified)
+
             Shelf targetShelf = null;
             if (targetShelfId != null && !targetShelfId.isEmpty()) {
                 targetShelf = shelfMap.get(targetShelfId);
             }
             
             if (targetShelf == null) {
-                // Find any shelf with space
                 targetShelf = findShelfWithSpace();
                 if (targetShelf == null) {
                     setStatusMessage("No available shelf space");
@@ -324,19 +306,16 @@ public class LibrarySystemManager {
                 TaskPriority.LOW,
                 "AUTO"
             );
-            
-            // Set distance-based parameters
+
             task.setRelatedBook(book);
             task.setTaskDurationSeconds(taskDuration);
             task.setBatteryRequired(batteryRequired);
-            
-            // Update book status to IN_TRANSIT and assign shelf
+
             book.setStatus(Book.BookStatus.IN_TRANSIT);
             book.setShelfId(targetShelf.getId());
             
             concurrentSystem.addTask(task);
-            
-            // Schedule adding book back to shelf after task completes
+
             java.util.Timer timer = new java.util.Timer();
             timer.schedule(new java.util.TimerTask() {
                 @Override
@@ -353,7 +332,7 @@ public class LibrarySystemManager {
                         }
                     }
                 }
-            }, (taskDuration + 1) * 1000); // Task duration + 1 second buffer
+            }, (taskDuration + 1) * 1000);
             
             setStatusMessage("Task created: Return " + book.getTitle() + 
                 " (" + taskDuration + "s, " + String.format("%.1f", batteryRequired) + "% battery)");
@@ -366,14 +345,11 @@ public class LibrarySystemManager {
             e.printStackTrace();
         }
     }
-    
-    // Book operations
+
     public void addBook(String title, String author, String category) {
         try {
             String bookId = "BOOK-" + (bookMap.size() + 1);
             Book book = new Book(bookId, title, author, category);
-            
-            // Find shelf with matching category and space
             Shelf shelf = findShelfWithSpaceForCategory(category);
             if (shelf == null) {
                 setStatusMessage("Error: No shelf available for category '" + category + "'");
@@ -398,7 +374,6 @@ public class LibrarySystemManager {
     }
     
     public Book searchBook(String query) {
-        // Search by title or author
         for (Book book : bookMap.values()) {
             if (book.getTitle().toLowerCase().contains(query.toLowerCase()) ||
                 book.getAuthor().toLowerCase().contains(query.toLowerCase())) {
@@ -407,8 +382,7 @@ public class LibrarySystemManager {
         }
         return null;
     }
-    
-    // Robot operations
+
     public void addRobot(String id, float execDuration) {
         try {
             Robot robot = new Robot(id, execDuration);
@@ -427,15 +401,13 @@ public class LibrarySystemManager {
             Logger.logSystem("ERROR", "Failed to add robot: " + e.getMessage());
         }
     }
-    
-    // Charging station operations
+
     public void addChargingStation(String id, String name, int numSlots) {
         try {
             ChargingStation station = new ChargingStation(id, name, numSlots);
             library.addStation(station);
             stationMap.put(station.getId(), station);
             
-            // Update concurrent system with new stations list
             concurrentSystem.setChargingStations(new ArrayList<>(stationMap.values()));
             
             setStatusMessage("Charging station added: " + name);
@@ -446,8 +418,7 @@ public class LibrarySystemManager {
             Logger.logSystem("ERROR", "Failed to add charging station: " + e.getMessage());
         }
     }
-    
-    // Shelf operations
+
     public void addShelf(String id, String name, String category, int distance, int maxCapacity) {
         try {
             Shelf shelf = new Shelf(id, name, category, distance, maxCapacity);
@@ -462,8 +433,7 @@ public class LibrarySystemManager {
             Logger.logSystem("ERROR", "Failed to add shelf: " + e.getMessage());
         }
     }
-    
-    // Helper methods
+
     private Book findBookByTitle(String title) {
         for (Book book : bookMap.values()) {
             if (book.getTitle().equalsIgnoreCase(title)) {
@@ -490,8 +460,7 @@ public class LibrarySystemManager {
         }
         return null;
     }
-    
-    // Getters
+
     public Library getLibrary() { return library; }
     public UnifiedConcurrentSystem getConcurrentSystem() { return concurrentSystem; }
     public SystemConfig getConfig() { return config; }
@@ -505,8 +474,7 @@ public class LibrarySystemManager {
     public ChargingStation getStationById(String id) { return stationMap.get(id); }
     public Shelf getShelfById(String id) { return shelfMap.get(id); }
     public Book getBookById(String id) { return bookMap.get(id); }
-    
-    // Observable properties
+
     public IntegerProperty totalBooksProperty() { return totalBooks; }
     public IntegerProperty totalShelvesProperty() { return totalShelves; }
     public IntegerProperty totalRobotsProperty() { return totalRobots; }
@@ -522,8 +490,7 @@ public class LibrarySystemManager {
     public void setStatusMessage(String message) {
         Platform.runLater(() -> statusMessage.set(message));
     }
-    
-    // Shutdown
+
     public void shutdown() {
         Logger.logSystem("INFO", "Shutting down LibrarySystemManager");
         
@@ -541,4 +508,3 @@ public class LibrarySystemManager {
         }
     }
 }
-

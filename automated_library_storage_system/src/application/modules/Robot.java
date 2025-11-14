@@ -5,10 +5,10 @@ import application.modules.RobotExceptions.OverloadException;
 import application.modules.RobotExceptions.TaskNotFoundException;
 
 public class Robot extends Resource {
-    private static final int MAX_BOOKS_PER_ROBOT = 1; // Only 1 book at a time
+    private static final int MAX_BOOKS_PER_ROBOT = 1;
     
     private float currentChargePercent = 100;
-    private float batteryThreshold = 15.0f; // Default threshold, can be set from config
+    private float batteryThreshold = 15.0f;
     private boolean isDocked = false;
     private Book carryingBook = null;
     private String currentTaskId = null;

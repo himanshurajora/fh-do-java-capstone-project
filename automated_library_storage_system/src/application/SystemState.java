@@ -59,17 +59,15 @@ public class SystemState {
     
     private static SystemState createDefault() {
         SystemState state = new SystemState();
-        
-        // Default config
+
         state.config = new SystemConfig();
         state.config.setBatteryThreshold(15.0f);
         state.config.setLogRefreshInterval(2);
         state.config.setNumChargingStations(2);
         state.config.setNumSlotsPerStation(1);
-        
-        // Create default shelves with categories and distances
+
         String[] categories = {"Fiction", "Science", "History", "Technology", "Literature"};
-        int[] distances = {10, 20, 30, 40, 50}; // Varying distances
+        int[] distances = {10, 20, 30, 40, 50};
         
         for (int i = 1; i <= 5; i++) {
             ShelfData shelf = new ShelfData();
@@ -81,8 +79,7 @@ public class SystemState {
             shelf.setBookIds(new ArrayList<>());
             state.shelves.add(shelf);
         }
-        
-        // Create default charging stations (2 stations, 1 slot each)
+
         for (int i = 1; i <= 2; i++) {
             ChargingStationData station = new ChargingStationData();
             station.setId("CHG-" + i);
@@ -90,8 +87,7 @@ public class SystemState {
             station.setNumSlots(1);
             state.stations.add(station);
         }
-        
-        // Create default robots (15 second execution, 1 book at a time)
+
         for (int i = 1; i <= 5; i++) {
             RobotData robot = new RobotData();
             robot.setId("ROBOT-" + i);
@@ -99,8 +95,7 @@ public class SystemState {
             robot.setExecutionDuration(15.0f);
             state.robots.add(robot);
         }
-        
-        // Create default books with categories matching shelves
+
         String[][] defaultBooks = {
             {"The Great Gatsby", "F. Scott Fitzgerald", "Fiction"},
             {"1984", "George Orwell", "Science"},
@@ -120,8 +115,7 @@ public class SystemState {
             book.setTitle(defaultBooks[i][0]);
             book.setAuthor(defaultBooks[i][1]);
             book.setCategory(defaultBooks[i][2]);
-            
-            // Find matching category shelf
+
             String matchingShelfId = null;
             for (ShelfData shelf : state.shelves) {
                 if (shelf.getCategory().equals(book.getCategory()) && 
@@ -142,7 +136,6 @@ public class SystemState {
         return state;
     }
     
-    // Getters and Setters
     public List<BookData> getBooks() { return books; }
     public void setBooks(List<BookData> books) { this.books = books; }
     
@@ -160,8 +153,7 @@ public class SystemState {
     
     public SystemConfig getConfig() { return config; }
     public void setConfig(SystemConfig config) { this.config = config; }
-    
-    // Data classes for serialization
+
     public static class BookData {
         private String id;
         private String title;
@@ -272,8 +264,7 @@ public class SystemState {
         public String getAssignedTo() { return assignedTo; }
         public void setAssignedTo(String assignedTo) { this.assignedTo = assignedTo; }
     }
-    
-    // LocalDateTime adapter for Gson
+
     private static class LocalDateTimeAdapter implements JsonSerializer<LocalDateTime>, JsonDeserializer<LocalDateTime> {
         @Override
         public JsonElement serialize(LocalDateTime src, java.lang.reflect.Type typeOfSrc, JsonSerializationContext context) {

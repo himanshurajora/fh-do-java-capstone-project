@@ -87,7 +87,6 @@ public class TaskManager {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String logEntry = String.format("[%s] SYSTEM_%s: %s", timestamp, action, description);
         systemLogs.add(logEntry);
-        // Also write to tasks scope log file
         application.Logger.logTasks("INFO", logEntry);
     }
 

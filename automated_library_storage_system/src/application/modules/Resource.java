@@ -13,7 +13,6 @@ public abstract class Resource {
         this.executionDuration = executionDuration;
     }
 
-    // abstract method to execute a task
     public abstract void execute(Task task) throws RobotExceptions;
 
  
