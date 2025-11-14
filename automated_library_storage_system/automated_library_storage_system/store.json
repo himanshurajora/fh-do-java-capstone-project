@@ -5,7 +5,7 @@
       "title": "Pride and Prejudice",
       "author": "Jane Austen",
       "category": "Literature",
-      "shelfId": "SHELF-4",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -13,6 +13,7 @@
       "title": "The Catcher in the Rye",
       "author": "J.D. Salinger",
       "category": "Fiction",
+      "shelfId": "SHELF-1",
       "status": "AVAILABLE"
     },
     {
@@ -20,6 +21,7 @@
       "title": "Atomic Habits",
       "author": "James Clear",
       "category": "Science",
+      "shelfId": "SHELF-2",
       "status": "AVAILABLE"
     },
     {
@@ -27,6 +29,7 @@
       "title": "Harry Potter",
       "author": "J.K. Rowling",
       "category": "Fiction",
+      "shelfId": "SHELF-1",
       "status": "AVAILABLE"
     },
     {
@@ -34,6 +37,7 @@
       "title": "The Hobbit",
       "author": "J.R.R. Tolkien",
       "category": "Literature",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -41,7 +45,7 @@
       "title": "The Lord of the Rings",
       "author": "J.R.R. Tolkien",
       "category": "Literature",
-      "shelfId": "SHELF-3",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -49,6 +53,7 @@
       "title": "The Silent Patient",
       "author": "Alex Michaelides",
       "category": "Fiction",
+      "shelfId": "SHELF-1",
       "status": "AVAILABLE"
     },
     {
@@ -56,7 +61,7 @@
       "title": "The Odyssey",
       "author": "Homer",
       "category": "Literature",
-      "shelfId": "SHELF-2",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -64,7 +69,7 @@
       "title": "Brave New World",
       "author": "Aldous Huxley",
       "category": "Science",
-      "shelfId": "SHELF-5",
+      "shelfId": "SHELF-2",
       "status": "AVAILABLE"
     },
     {
@@ -72,6 +77,15 @@
       "title": "The Alchemist",
       "author": "Paulo Coelho",
       "category": "Literature",
+      "shelfId": "SHELF-5",
+      "status": "AVAILABLE"
+    },
+    {
+      "id": "BOOK-101",
+      "title": "Alice\u0027s Adventures in Wonderland",
+      "author": "Lewis Carroll",
+      "category": "Fiction",
+      "shelfId": "SHELF-1",
       "status": "AVAILABLE"
     },
     {
@@ -79,7 +93,7 @@
       "title": "Beowulf",
       "author": "Unknown",
       "category": "Literature",
-      "shelfId": "SHELF-1",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -87,7 +101,8 @@
       "title": "13",
       "author": "Author 13",
       "category": "History",
-      "status": "AVAILABLE"
+      "shelfId": "SHELF-5",
+      "status": "TAKEN"
     },
     {
       "id": "BOOK-14",
@@ -102,13 +117,15 @@
       "title": "11",
       "author": "Author 11",
       "category": "Science",
-      "status": "AVAILABLE"
+      "shelfId": "SHELF-5",
+      "status": "TAKEN"
     },
     {
       "id": "BOOK-99",
       "title": "Nicomachean Ethics",
       "author": "Aristotle",
       "category": "Philosophy",
+      "shelfId": "SHELF-4",
       "status": "AVAILABLE"
     },
     {
@@ -117,13 +134,14 @@
       "author": "Author 12",
       "category": "Literature",
       "shelfId": "SHELF-5",
-      "status": "AVAILABLE"
+      "status": "TAKEN"
     },
     {
       "id": "BOOK-97",
       "title": "Democracy in America",
       "author": "Alexis de Tocqueville",
       "category": "History",
+      "shelfId": "SHELF-3",
       "status": "AVAILABLE"
     },
     {
@@ -139,6 +157,7 @@
       "title": "The Republic",
       "author": "Plato",
       "category": "Philosophy",
+      "shelfId": "SHELF-4",
       "status": "AVAILABLE"
     },
     {
@@ -146,6 +165,7 @@
       "title": "The Histories",
       "author": "Herodotus",
       "category": "History",
+      "shelfId": "SHELF-3",
       "status": "AVAILABLE"
     },
     {
@@ -153,7 +173,7 @@
       "title": "The Prince",
       "author": "Niccolò Machiavelli",
       "category": "History",
-      "shelfId": "SHELF-4",
+      "shelfId": "SHELF-3",
       "status": "AVAILABLE"
     },
     {
@@ -161,7 +181,7 @@
       "title": "Sapiens",
       "author": "Yuval Noah Harari",
       "category": "History",
-      "shelfId": "SHELF-2",
+      "shelfId": "SHELF-3",
       "status": "AVAILABLE"
     },
     {
@@ -169,7 +189,7 @@
       "title": "1984",
       "author": "George Orwell",
       "category": "Science",
-      "shelfId": "SHELF-5",
+      "shelfId": "SHELF-2",
       "status": "AVAILABLE"
     },
     {
@@ -177,6 +197,7 @@
       "title": "To Kill a Mockingbird",
       "author": "Harper Lee",
       "category": "Fiction",
+      "shelfId": "SHELF-1",
       "status": "AVAILABLE"
     },
     {
@@ -184,6 +205,7 @@
       "title": "15",
       "author": "Author 15",
       "category": "Fiction",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -199,6 +221,7 @@
       "title": "Anna Karenina",
       "author": "Leo Tolstoy",
       "category": "Literature",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -206,7 +229,7 @@
       "title": "The Picture of Dorian Gray",
       "author": "Oscar Wilde",
       "category": "Literature",
-      "shelfId": "SHELF-4",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -214,7 +237,7 @@
       "title": "The Brothers Karamazov",
       "author": "Fyodor Dostoevsky",
       "category": "Literature",
-      "shelfId": "SHELF-1",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -222,6 +245,7 @@
       "title": "War and Peace",
       "author": "Leo Tolstoy",
       "category": "History",
+      "shelfId": "SHELF-3",
       "status": "AVAILABLE"
     },
     {
@@ -229,7 +253,7 @@
       "title": "Great Expectations",
       "author": "Charles Dickens",
       "category": "Literature",
-      "shelfId": "SHELF-3",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -237,6 +261,7 @@
       "title": "Crime and Punishment",
       "author": "Fyodor Dostoevsky",
       "category": "Literature",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -244,6 +269,7 @@
       "title": "Angels \u0026 Demons",
       "author": "Dan Brown",
       "category": "Fiction",
+      "shelfId": "SHELF-1",
       "status": "AVAILABLE"
     },
     {
@@ -251,6 +277,7 @@
       "title": "A Tale of Two Cities",
       "author": "Charles Dickens",
       "category": "Literature",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -266,13 +293,15 @@
       "title": "9",
       "author": "Author 9",
       "category": "Fiction",
-      "status": "AVAILABLE"
+      "shelfId": "SHELF-5",
+      "status": "TAKEN"
     },
     {
       "id": "BOOK-6",
       "title": "6",
       "author": "Author 6",
       "category": "History",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -288,6 +317,7 @@
       "title": "4",
       "author": "Author 4",
       "category": "Literature",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -295,6 +325,7 @@
       "title": "The Old Man and The Sea",
       "author": "Ernest Hemingway",
       "category": "Literature",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -303,13 +334,14 @@
       "author": "Author 5",
       "category": "Fiction",
       "shelfId": "SHELF-5",
-      "status": "TAKEN"
+      "status": "AVAILABLE"
     },
     {
       "id": "BOOK-49",
       "title": "For Whom the Bell Tolls",
       "author": "Ernest Hemingway",
       "category": "Literature",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -318,7 +350,7 @@
       "author": "Author 2",
       "category": "Science",
       "shelfId": "SHELF-5",
-      "status": "TAKEN"
+      "status": "AVAILABLE"
     },
     {
       "id": "BOOK-3",
@@ -326,13 +358,14 @@
       "author": "Author 3",
       "category": "History",
       "shelfId": "SHELF-5",
-      "status": "TAKEN"
+      "status": "AVAILABLE"
     },
     {
       "id": "BOOK-1",
       "title": "1",
       "author": "Author 1",
       "category": "Fiction",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -348,7 +381,7 @@
       "title": "Jane Eyre",
       "author": "Charlotte Brontë",
       "category": "Literature",
-      "shelfId": "SHELF-4",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -356,6 +389,7 @@
       "title": "Wuthering Heights",
       "author": "Emily Brontë",
       "category": "Literature",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -363,6 +397,7 @@
       "title": "Fahrenheit 451",
       "author": "Ray Bradbury",
       "category": "Science",
+      "shelfId": "SHELF-2",
       "status": "AVAILABLE"
     },
     {
@@ -370,6 +405,7 @@
       "title": "Moby Dick",
       "author": "Herman Melville",
       "category": "Literature",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -377,6 +413,7 @@
       "title": "Meditations",
       "author": "Marcus Aurelius",
       "category": "History",
+      "shelfId": "SHELF-3",
       "status": "AVAILABLE"
     },
     {
@@ -384,7 +421,7 @@
       "title": "The Art of War",
       "author": "Sun Tzu",
       "category": "History",
-      "shelfId": "SHELF-1",
+      "shelfId": "SHELF-3",
       "status": "AVAILABLE"
     },
     {
@@ -392,6 +429,7 @@
       "title": "The Iliad",
       "author": "Homer",
       "category": "Literature",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -399,6 +437,7 @@
       "title": "Inferno",
       "author": "Dan Brown",
       "category": "Fiction",
+      "shelfId": "SHELF-1",
       "status": "AVAILABLE"
     },
     {
@@ -406,6 +445,7 @@
       "title": "The Shining",
       "author": "Stephen King",
       "category": "Fiction",
+      "shelfId": "SHELF-1",
       "status": "AVAILABLE"
     },
     {
@@ -413,6 +453,7 @@
       "title": "The Da Vinci Code",
       "author": "Dan Brown",
       "category": "Fiction",
+      "shelfId": "SHELF-1",
       "status": "AVAILABLE"
     },
     {
@@ -420,7 +461,7 @@
       "title": "Dracula",
       "author": "Bram Stoker",
       "category": "Literature",
-      "shelfId": "SHELF-1",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -428,6 +469,7 @@
       "title": "Frankenstein",
       "author": "Mary Shelley",
       "category": "Science",
+      "shelfId": "SHELF-2",
       "status": "AVAILABLE"
     },
     {
@@ -435,6 +477,7 @@
       "title": "Les Misérables",
       "author": "Victor Hugo",
       "category": "History",
+      "shelfId": "SHELF-3",
       "status": "AVAILABLE"
     },
     {
@@ -442,6 +485,7 @@
       "title": "The Hunchback of Notre-Dame",
       "author": "Victor Hugo",
       "category": "Literature",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -449,6 +493,7 @@
       "title": "The Trial",
       "author": "Franz Kafka",
       "category": "Literature",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -464,7 +509,7 @@
       "title": "The Stranger",
       "author": "Albert Camus",
       "category": "Literature",
-      "shelfId": "SHELF-2",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -472,6 +517,7 @@
       "title": "The Plague",
       "author": "Albert Camus",
       "category": "Literature",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -487,6 +533,7 @@
       "title": "The War of the Worlds",
       "author": "H.G. Wells",
       "category": "Science",
+      "shelfId": "SHELF-2",
       "status": "AVAILABLE"
     },
     {
@@ -494,6 +541,7 @@
       "title": "The Time Machine",
       "author": "H.G. Wells",
       "category": "Science",
+      "shelfId": "SHELF-2",
       "status": "AVAILABLE"
     },
     {
@@ -501,6 +549,7 @@
       "title": "The Goldfinch",
       "author": "Donna Tartt",
       "category": "Literature",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -508,6 +557,7 @@
       "title": "Normal People",
       "author": "Sally Rooney",
       "category": "Fiction",
+      "shelfId": "SHELF-1",
       "status": "AVAILABLE"
     },
     {
@@ -515,6 +565,7 @@
       "title": "The Girl on the Train",
       "author": "Paula Hawkins",
       "category": "Fiction",
+      "shelfId": "SHELF-1",
       "status": "AVAILABLE"
     },
     {
@@ -522,7 +573,7 @@
       "title": "Gone Girl",
       "author": "Gillian Flynn",
       "category": "Fiction",
-      "shelfId": "SHELF-4",
+      "shelfId": "SHELF-1",
       "status": "AVAILABLE"
     },
     {
@@ -530,6 +581,7 @@
       "title": "The Book Thief",
       "author": "Markus Zusak",
       "category": "Literature",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -537,6 +589,7 @@
       "title": "The Night Circus",
       "author": "Erin Morgenstern",
       "category": "Fiction",
+      "shelfId": "SHELF-1",
       "status": "AVAILABLE"
     },
     {
@@ -544,6 +597,7 @@
       "title": "The Kite Runner",
       "author": "Khaled Hosseini",
       "category": "Fiction",
+      "shelfId": "SHELF-1",
       "status": "AVAILABLE"
     },
     {
@@ -551,7 +605,7 @@
       "title": "A Thousand Splendid Suns",
       "author": "Khaled Hosseini",
       "category": "Fiction",
-      "shelfId": "SHELF-2",
+      "shelfId": "SHELF-1",
       "status": "AVAILABLE"
     },
     {
@@ -559,7 +613,7 @@
       "title": "Norwegian Wood",
       "author": "Haruki Murakami",
       "category": "Literature",
-      "shelfId": "SHELF-3",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -567,6 +621,7 @@
       "title": "Kafka on the Shore",
       "author": "Haruki Murakami",
       "category": "Literature",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -574,6 +629,7 @@
       "title": "The Wind-Up Bird Chronicle",
       "author": "Haruki Murakami",
       "category": "Literature",
+      "shelfId": "SHELF-5",
       "status": "AVAILABLE"
     },
     {
@@ -581,6 +637,7 @@
       "title": "The Wright Brothers",
       "author": "David McCullough",
       "category": "History",
+      "shelfId": "SHELF-3",
       "status": "AVAILABLE"
     },
     {
@@ -588,6 +645,7 @@
       "title": "Team of Rivals",
       "author": "Doris Kearns Goodwin",
       "category": "History",
+      "shelfId": "SHELF-3",
       "status": "AVAILABLE"
     },
     {
@@ -595,6 +653,7 @@
       "title": "The Universe in a Nutshell",
       "author": "Stephen Hawking",
       "category": "Science",
+      "shelfId": "SHELF-2",
       "status": "AVAILABLE"
     },
     {
@@ -602,6 +661,7 @@
       "title": "Guns, Germs, and Steel",
       "author": "Jared Diamond",
       "category": "History",
+      "shelfId": "SHELF-3",
       "status": "AVAILABLE"
     },
     {
@@ -609,6 +669,7 @@
       "title": "World Without End",
       "author": "Ken Follett",
       "category": "History",
+      "shelfId": "SHELF-3",
       "status": "AVAILABLE"
     },
     {
@@ -616,7 +677,7 @@
       "title": "A Brief History of Time",
       "author": "Stephen Hawking",
       "category": "Science",
-      "shelfId": "SHELF-1",
+      "shelfId": "SHELF-2",
       "status": "AVAILABLE"
     },
     {
@@ -624,7 +685,7 @@
       "title": "SPQR: A History of Ancient Rome",
       "author": "Mary Beard",
       "category": "History",
-      "shelfId": "SHELF-2",
+      "shelfId": "SHELF-3",
       "status": "AVAILABLE"
     },
     {
@@ -632,6 +693,7 @@
       "title": "The Silk Roads",
       "author": "Peter Frankopan",
       "category": "History",
+      "shelfId": "SHELF-3",
       "status": "AVAILABLE"
     },
     {
@@ -639,6 +701,7 @@
       "title": "The Diary of a Young Girl",
       "author": "Anne Frank",
       "category": "History",
+      "shelfId": "SHELF-3",
       "status": "AVAILABLE"
     },
     {
@@ -646,6 +709,7 @@
       "title": "The Gulag Archipelago",
       "author": "Aleksandr Solzhenitsyn",
       "category": "History",
+      "shelfId": "SHELF-3",
       "status": "AVAILABLE"
     },
     {
@@ -661,6 +725,7 @@
       "title": "I, Robot",
       "author": "Isaac Asimov",
       "category": "Science",
+      "shelfId": "SHELF-2",
       "status": "AVAILABLE"
     },
     {
@@ -668,6 +733,7 @@
       "title": "Snow Crash",
       "author": "Neal Stephenson",
       "category": "Science",
+      "shelfId": "SHELF-2",
       "status": "AVAILABLE"
     },
     {
@@ -675,7 +741,7 @@
       "title": "Foundation",
       "author": "Isaac Asimov",
       "category": "Science",
-      "shelfId": "SHELF-4",
+      "shelfId": "SHELF-2",
       "status": "AVAILABLE"
     },
     {
@@ -683,6 +749,7 @@
       "title": "Do Androids Dream of Electric Sheep?",
       "author": "Philip K. Dick",
       "category": "Science",
+      "shelfId": "SHELF-2",
       "status": "AVAILABLE"
     },
     {
@@ -690,6 +757,7 @@
       "title": "Neuromancer",
       "author": "William Gibson",
       "category": "Science",
+      "shelfId": "SHELF-2",
       "status": "AVAILABLE"
     },
     {
@@ -697,6 +765,7 @@
       "title": "The Martian",
       "author": "Andy Weir",
       "category": "Science",
+      "shelfId": "SHELF-2",
       "status": "AVAILABLE"
     },
     {
@@ -704,7 +773,7 @@
       "title": "Dune",
       "author": "Frank Herbert",
       "category": "Science",
-      "shelfId": "SHELF-3",
+      "shelfId": "SHELF-2",
       "status": "AVAILABLE"
     },
     {
@@ -712,7 +781,7 @@
       "title": "The Lost World",
       "author": "Michael Crichton",
       "category": "Science",
-      "shelfId": "SHELF-5",
+      "shelfId": "SHELF-2",
       "status": "AVAILABLE"
     },
     {
@@ -720,6 +789,7 @@
       "title": "The Pillars of the Earth",
       "author": "Ken Follett",
       "category": "History",
+      "shelfId": "SHELF-3",
       "status": "AVAILABLE"
     },
     {
@@ -727,6 +797,7 @@
       "title": "The Andromeda Strain",
       "author": "Michael Crichton",
       "category": "Science",
+      "shelfId": "SHELF-2",
       "status": "AVAILABLE"
     },
     {
@@ -734,6 +805,7 @@
       "title": "Jurassic Park",
       "author": "Michael Crichton",
       "category": "Science",
+      "shelfId": "SHELF-2",
       "status": "AVAILABLE"
     }
   ],
@@ -745,8 +817,37 @@
       "distance": 50,
       "maxCapacity": 50,
       "bookIds": [
+        "BOOK-24",
+        "BOOK-20",
+        "BOOK-21",
+        "BOOK-29",
+        "BOOK-27",
+        "BOOK-100",
+        "BOOK-46",
+        "BOOK-47",
+        "BOOK-44",
+        "BOOK-42",
+        "BOOK-43",
+        "BOOK-41",
+        "BOOK-4",
+        "BOOK-48",
+        "BOOK-49",
         "BOOK-50",
-        "BOOK-65"
+        "BOOK-35",
+        "BOOK-36",
+        "BOOK-34",
+        "BOOK-30",
+        "BOOK-68",
+        "BOOK-67",
+        "BOOK-64",
+        "BOOK-65",
+        "BOOK-62",
+        "BOOK-63",
+        "BOOK-57",
+        "BOOK-53",
+        "BOOK-59",
+        "BOOK-60",
+        "BOOK-61"
       ]
     },
     {
@@ -756,16 +857,36 @@
       "distance": 30,
       "maxCapacity": 70,
       "bookIds": [
-        "BOOK-90"
+        "BOOK-97",
+        "BOOK-95",
+        "BOOK-96",
+        "BOOK-19",
+        "BOOK-45",
+        "BOOK-31",
+        "BOOK-32",
+        "BOOK-66",
+        "BOOK-88",
+        "BOOK-89",
+        "BOOK-87",
+        "BOOK-84",
+        "BOOK-93",
+        "BOOK-94",
+        "BOOK-91",
+        "BOOK-92",
+        "BOOK-90",
+        "BOOK-83"
       ]
     },
     {
       "id": "SHELF-4",
       "name": "Shelf D",
-      "category": "Technology",
+      "category": "Philosophy",
       "distance": 40,
       "maxCapacity": 70,
-      "bookIds": []
+      "bookIds": [
+        "BOOK-99",
+        "BOOK-98"
+      ]
     },
     {
       "id": "SHELF-1",
@@ -774,7 +895,22 @@
       "distance": 10,
       "maxCapacity": 70,
       "bookIds": [
-        "BOOK-16"
+        "BOOK-25",
+        "BOOK-23",
+        "BOOK-28",
+        "BOOK-101",
+        "BOOK-18",
+        "BOOK-16",
+        "BOOK-40",
+        "BOOK-39",
+        "BOOK-37",
+        "BOOK-38",
+        "BOOK-58",
+        "BOOK-55",
+        "BOOK-56",
+        "BOOK-54",
+        "BOOK-51",
+        "BOOK-52"
       ]
     },
     {
@@ -784,34 +920,53 @@
       "distance": 20,
       "maxCapacity": 70,
       "bookIds": [
-        "BOOK-71"
+        "BOOK-22",
+        "BOOK-26",
+        "BOOK-17",
+        "BOOK-33",
+        "BOOK-69",
+        "BOOK-71",
+        "BOOK-72",
+        "BOOK-70",
+        "BOOK-86",
+        "BOOK-85",
+        "BOOK-79",
+        "BOOK-77",
+        "BOOK-78",
+        "BOOK-75",
+        "BOOK-76",
+        "BOOK-73",
+        "BOOK-74",
+        "BOOK-82",
+        "BOOK-80",
+        "BOOK-81"
       ]
     }
   ],
   "robots": [
     {
       "id": "ROBOT-4",
-      "currentChargePercent": 100.0,
+      "currentChargePercent": 20.0,
       "executionDuration": 15.0
     },
     {
       "id": "ROBOT-3",
-      "currentChargePercent": 25.0,
+      "currentChargePercent": 50.0,
       "executionDuration": 15.0
     },
     {
       "id": "ROBOT-5",
-      "currentChargePercent": 15.0,
+      "currentChargePercent": 20.0,
       "executionDuration": 15.0
     },
     {
       "id": "ROBOT-2",
-      "currentChargePercent": 100.0,
+      "currentChargePercent": 50.0,
       "executionDuration": 15.0
     },
     {
       "id": "ROBOT-1",
-      "currentChargePercent": 20.0,
+      "currentChargePercent": 50.0,
       "executionDuration": 15.0
     }
   ],

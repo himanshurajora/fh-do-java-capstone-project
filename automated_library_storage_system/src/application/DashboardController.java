@@ -236,11 +236,14 @@ public class DashboardController {
     }
     
     private void startDataRefresh() {
-        Timeline dataRefreshTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+        Timeline dataRefreshTimeline = new Timeline(new KeyFrame(Duration.seconds(10), e -> {
             refreshBooks();
-            refreshRobots();
             refreshShelves();
             refreshChargingStations();
+        }));
+
+        Timeline oneSecondRefreshTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            refreshRobots();
             refreshTasks();
         }));
         dataRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
