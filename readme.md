@@ -56,6 +56,48 @@ An automated library management system that uses robots to retrieve and return b
 - Configurable settings: battery threshold and log refresh interval
 - System state persistence to JSON file
 
+## Domain Descriptions
+
+### Library System, HMI and System Integration Module
+**Assigned to: Srijana Sharma**
+
+| Domain | Description |
+|--------|-------------|
+| Library System Core | Central system manager that coordinates all modules, manages system state persistence, and handles initialization |
+| Human-Machine Interface (HMI) | JavaFX dashboard providing real-time monitoring, user interactions, and visual representation of system status |
+| System Integration | Unified concurrent system that integrates robots, tasks, shelves, and charging stations into a cohesive workflow |
+| State Management | JSON-based persistence layer that saves and loads system state including books, robots, shelves, and configuration |
+
+### Robot and Equipment Module
+**Assigned to: Priya Das**
+
+| Domain | Description |
+|--------|-------------|
+| Robot Management | Robot entities with battery management, task execution capabilities, and book carrying functionality |
+| Charging Station System | Charging stations with multiple slots that automatically charge robots when battery falls below threshold |
+| Battery Management | Battery level tracking, threshold monitoring, and automatic charging queue management for robots |
+| Equipment Status | Real-time status tracking for robots (idle, busy, charging) and charging stations (available, occupied) |
+
+### Resource Allocation, Books and Shelf Management
+**Assigned to: Himanshu Jangid**
+
+| Domain | Description |
+|--------|-------------|
+| Book Management | Book entities with metadata (title, author, category), status tracking (available, taken, in-transit), and shelf assignment |
+| Shelf Management | Shelf entities organized by category with capacity limits, distance-based task duration, and book storage |
+| Resource Allocation | Intelligent assignment of books to shelves based on category matching and available capacity |
+| Inventory Tracking | Real-time tracking of book locations, shelf occupancy, and resource availability across the system |
+
+### Task Management & Workflow Module
+**Assigned to: Tejas Kadam**
+
+| Domain | Description |
+|--------|-------------|
+| Task Creation | Task generation for retrieving books from shelves and returning books to appropriate shelves |
+| Task Queue System | Priority-based task queue that manages pending tasks and assigns them to available robots |
+| Workflow Execution | Task execution workflow that coordinates robot movement, book pickup/delivery, and battery consumption |
+| Task Status Tracking | Comprehensive tracking of task lifecycle (pending, in-progress, completed, failed) with detailed logging |
+
 ## Setup Instructions
 
 ### Prerequisites
