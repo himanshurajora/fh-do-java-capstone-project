@@ -2,6 +2,12 @@
 
 An automated library management system that uses robots to retrieve and return books from shelves. The system features a JavaFX dashboard for real-time monitoring and control of books, robots, tasks, and charging stations.
 
+## Github repo: [Click Here](https://github.com/himanshurajora/fh-do-java-capstone-project)
+
+## Video: [Click Here](https://fhdoprod-my.sharepoint.com/:v:/g/personal/himanshu_jangid001_stud_fh-dortmund_de/EY6MLR8TCPJLoP6MY8r6oSsB6uFoxmm6iwGBoiVp5GyqEA?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=vRIs4n)
+
+## Presentation: [Click Here](https://www.canva.com/design/DAG1eI_Sq8Q/1DKzztvcJD8TkBxQfgmrIw/edit?utm_content=DAG1eI_Sq8Q&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+
 ## Features
 
 ### Book Management
@@ -133,7 +139,7 @@ An automated library management system that uses robots to retrieve and return b
    ```
    --module-path "C:\libs\javafx-sdk-21.0.8\lib: --add-modules javafx.controls,javafx.fxml
    ```
-   
+
 7. Click Apply and then Run
 
 ### Step 7: Run the Application
