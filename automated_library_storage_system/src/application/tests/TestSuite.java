@@ -1,7 +1,7 @@
 package application.tests;
 
 public class TestSuite {
-    public static void main(String[] args) {
+    public static void run(String[] args) {
         System.out.println("Running test suite...\n");
         TaskManagerTests.run();
         RobotTests.run();

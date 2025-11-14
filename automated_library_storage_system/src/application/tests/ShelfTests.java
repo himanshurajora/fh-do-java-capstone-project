@@ -18,10 +18,10 @@ public class ShelfTests {
     }
     private static void ok(boolean c,String m){run++; if(c)pass++; else fails.add(m);}    
 
-    private static void testAddBook(){ Shelf s=new Shelf("F", "F", "F", 10, 10); s.addBook(new Book("B","A", "B", "B")); ok(true,"added"); }
+    private static void testAddBook(){ Shelf s=new Shelf("F", "F", "F", 10, 10); s.addBook(new Book("B","A", "B", "F")); ok(true,"added"); }
     private static void testAddBookNull(){ Shelf s=new Shelf("F", "F", "F", 10, 10); try{s.addBook(null); ok(false,"null should throw");}catch(IllegalArgumentException e){ok(true,"");}}
-    private static void testRemoveBookOk(){ Shelf s=new Shelf("F", "F", "F", 10, 10); Book b=new Book("B","A", "B", "B"); s.addBook(b); try{s.removeBook(b); ok(true,"");}catch(Exception e){ok(false,"remove should work");}}
-    private static void testRemoveBookMissing(){ Shelf s=new Shelf("F", "F", "F", 10, 10); try{s.removeBook(new Book("X","A", "B", "B")); ok(false,"missing should throw");}catch(RobotExceptions.InvalidOperationException e){ok(true,"");}}
+    private static void testRemoveBookOk(){ Shelf s=new Shelf("F", "F", "F", 10, 10); Book b=new Book("B","A", "B", "F"); s.addBook(b); try{s.removeBook(b); ok(true,"");}catch(Exception e){ok(false,"remove should work");}}
+    private static void testRemoveBookMissing(){ Shelf s=new Shelf("F", "F", "F", 10, 10); try{s.removeBook(new Book("X","A", "B", "F")); ok(false,"missing should throw");}catch(RobotExceptions.InvalidOperationException e){ok(true,"");}}
     private static void testShowBooks(){ Shelf s=new Shelf("F", "F", "F", 10, 10); s.showBooks(); ok(true,"show prints"); }
 }
 

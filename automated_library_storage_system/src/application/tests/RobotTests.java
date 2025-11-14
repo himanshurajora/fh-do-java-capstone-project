@@ -48,6 +48,8 @@ public class RobotTests {
 
     private static void testExecuteOverload(){
         Robot r=new Robot("R1",1);
+        Book b=new Book("B","A", "B", "B");
+        r.pickUpBook(b);
         Task t=new Task("T","N","d", TaskPriority.LOW, "R1");
         try { r.execute(t); ok(false, "execute should throw Overload"); }
         catch (RobotExceptions e){ ok(true, ""); }
