@@ -186,6 +186,6 @@ An automated library management system that uses robots to retrieve and return b
 
 ![Concurrency](diagrams/cuncurrency.png)
 
-![UML](diagram/uml.png)
+![UML](diagrams/uml.png)
 
 ![Logger Sequence](diagrams/logger-sequence.png)
